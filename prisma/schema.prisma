@@ -1,0 +1,215 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  wechatOpenId  String?   @unique @map("wechat_open_id")
+  wechatUnionId String?   @unique @map("wechat_union_id")
+  nickname      String?
+  avatarUrl     String?   @map("avatar_url")
+  role          String    @default("pending") // pending, member, admin
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  albums      Album[]
+  photos      Photo[]
+  comments    Comment[]
+  likes       Like[]
+  faceLabels  FaceLabel[]
+  notifications Notification[]
+  sessions    Session[]
+
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  token        String   @unique
+  expiresAt    DateTime @map("expires_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Album {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  coverUrl    String?  @map("cover_url")
+  createdBy   String   @map("created_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  creator User     @relation(fields: [createdBy], references: [id])
+  photos  AlbumPhoto[]
+
+  @@map("albums")
+}
+
+model Photo {
+  id           String   @id @default(uuid())
+  originalUrl  String   @map("original_url")
+  thumbnailUrl String   @map("thumbnail_url")
+  webpUrl      String   @map("webp_url")
+  width        Int?
+  height       Int?
+  fileSize     Int      @map("file_size")
+  fileName     String   @map("file_name")
+  mimeType     String   @map("mime_type")
+  hash         String
+  takenAt      DateTime? @map("taken_at")
+  latitude     Float?
+  longitude    Float?
+  locationName String?  @map("location_name")
+  cameraMake   String?  @map("camera_make")
+  cameraModel  String?  @map("camera_model")
+  isVideo      Boolean  @default(false) @map("is_video")
+  videoUrl     String?  @map("video_url")
+  videoCover   String?  @map("video_cover")
+  uploadedBy   String   @map("uploaded_by")
+  deletedAt    DateTime? @map("deleted_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  uploader  User         @relation(fields: [uploadedBy], references: [id])
+  albums    AlbumPhoto[]
+  faces     DetectedFace[]
+  comments  Comment[]
+  likes     Like[]
+  embedding Float[]      @default([])
+
+  @@index([takenAt])
+  @@index([uploadedBy])
+  @@index([deletedAt])
+  @@index([hash])
+  @@map("photos")
+}
+
+model AlbumPhoto {
+  albumId   String @map("album_id")
+  photoId   String @map("photo_id")
+  addedAt   DateTime @default(now()) @map("added_at")
+
+  album Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  photo Photo @relation(fields: [photoId], references: [id], onDelete: Cascade)
+
+  @@id([albumId, photoId])
+  @@map("album_photos")
+}
+
+model FaceLabel {
+  id        String   @id @default(uuid())
+  name      String
+  createdBy String   @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  creator User           @relation(fields: [createdBy], references: [id])
+  faces   DetectedFace[]
+
+  @@unique([name, createdBy])
+  @@map("face_labels")
+}
+
+model DetectedFace {
+  id          String   @id @default(uuid())
+  photoId     String   @map("photo_id")
+  faceLabelId String?  @map("face_label_id")
+  descriptor  Float[] // face-api.js descriptor
+  x           Float
+  y           Float
+  width       Float
+  height      Float
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  photo     Photo      @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  faceLabel FaceLabel? @relation(fields: [faceLabelId], references: [id])
+
+  @@index([photoId])
+  @@index([faceLabelId])
+  @@map("detected_faces")
+}
+
+model Comment {
+  id        String    @id @default(uuid())
+  content   String
+  photoId   String    @map("photo_id")
+  userId    String    @map("user_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  photo Photo @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@index([photoId])
+  @@map("comments")
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  photoId   String   @map("photo_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  photo Photo @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@unique([photoId, userId])
+  @@map("likes")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  type      String   // comment, like, new_photo, join_request, share
+  title     String
+  body      String
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@map("notifications")
+}
+
+model ShareLink {
+  id          String   @id @default(uuid())
+  albumId     String   @map("album_id")
+  photoId     String?  @map("photo_id")
+  code        String   @unique
+  password    String?
+  expiresAt   DateTime @map("expires_at")
+  viewCount   Int      @default(0) @map("view_count")
+  createdBy   String   @map("created_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  creator User  @relation(fields: [createdBy], references: [id])
+  album   Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  @@index([code])
+  @@index([albumId])
+  @@map("share_links")
+}
+
+model Anniversary {
+  id          String   @id @default(uuid())
+  title       String
+  date        DateTime
+  description String?
+  createdBy   String   @map("created_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  creator User @relation(fields: [createdBy], references: [id])
+
+  @@map("anniversaries")
+}
