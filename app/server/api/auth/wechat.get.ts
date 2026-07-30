@@ -1,5 +1,5 @@
 // GET /api/auth/wechat - Generate QR code login URL
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async () => {
   const config = useRuntimeConfig()
 
   const redirectUri = `${config.public.siteUrl}/api/auth/wechat/callback`

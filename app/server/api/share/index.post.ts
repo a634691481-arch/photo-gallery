@@ -1,7 +1,7 @@
 // POST /api/share - Create a share link
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const { albumId, photoId, expires, password } = body
+  const { albumId } = body
 
   if (!albumId) {
     throw createError({ statusCode: 400, message: 'albumId is required' })

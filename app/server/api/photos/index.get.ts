@@ -1,6 +1,6 @@
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
-  const { month, year, cursor, limit = '30' } = query
+  const { cursor, limit = '30' } = query
 
   // TODO: Query photos from database with filters
   // Filter by month/year if provided

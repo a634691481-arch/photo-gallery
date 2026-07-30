@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <div v-if="visible" class="fixed inset-0 z-[100]   flex flex-col items-center justify-center" @click.self="$emit('close')" @wheel="onWheel" @touchstart="onTouchStart" @touchmove.prevent="onTouchMove" @touchend="onTouchEnd">
+    <div v-if="visible" class="fixed inset-0 z-[100]   flex flex-col items-center justify-center" @click.self="$emit('close')" @wheel="onWheel" @touchstart="onTouchStart" @touchmove.prevent @touchend="onTouchEnd">
       <button class="absolute top-4 right-4 z-10 p-3 rounded-full bg-cream/10 hover:bg-cream/20 transition-colors text-cream/80" @click="$emit('close')"><Icon name="ph-x" class="size-6" /></button>
       <button class="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-cream/10 hover:bg-cream/20 transition-colors text-cream/80" @click.stop="prev"><Icon name="ph-caret-left" class="size-6" /></button>
       <button class="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-cream/10 hover:bg-cream/20 transition-colors text-cream/80" @click.stop="next"><Icon name="ph-caret-right" class="size-6" /></button>
@@ -77,7 +77,7 @@ const onTouchStart = (e: TouchEvent) => {
   touchStartY = e.touches[0].clientY
 }
 
-const onTouchMove = (e: TouchEvent) => {}
+
 
 const onTouchEnd = (e: TouchEvent) => {
   const dx = e.changedTouches[0].clientX - touchStartX

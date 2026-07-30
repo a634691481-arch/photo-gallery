@@ -1,7 +1,7 @@
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
-    const { photos, albumId } = body
+    const { photos } = body
 
     if (!photos || !photos.length) {
       throw createError({ statusCode: 400, message: 'No photos provided' })
