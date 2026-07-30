@@ -1,0 +1,98 @@
+<template>
+  <Teleport to="body">
+    <div v-if="visible" class="fixed inset-0 z-[100]   flex flex-col items-center justify-center" @click.self="$emit('close')" @wheel="onWheel" @touchstart="onTouchStart" @touchmove.prevent="onTouchMove" @touchend="onTouchEnd">
+      <button class="absolute top-4 right-4 z-10 p-3 rounded-full bg-cream/10 hover:bg-cream/20 transition-colors text-cream/80" @click="$emit('close')"><Icon name="ph-x" class="size-6" /></button>
+      <button class="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-cream/10 hover:bg-cream/20 transition-colors text-cream/80" @click.stop="prev"><Icon name="ph-caret-left" class="size-6" /></button>
+      <button class="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-cream/10 hover:bg-cream/20 transition-colors text-cream/80" @click.stop="next"><Icon name="ph-caret-right" class="size-6" /></button>
+
+      <img :src="currentPhoto?.webpUrl || currentPhoto?.url" :alt="currentPhoto?.fileName || currentPhoto?.title" class="max-w-[88vw] max-h-[82vh] object-contain rounded-lg" />
+
+      <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-cream/10 backdrop-blur-xl rounded-full px-5 py-2.5">
+        <span class="text-cream/60 text-xs">{{ index + 1 }} / {{ photos.length }}</span>
+        <div class="w-px h-4 bg-cream/20" />
+        <button class="text-cream/70 hover:text-red-400 transition-colors text-xs flex items-center gap-1"><Icon name="ph-heart" class="size-4" />收藏</button>
+        <a v-if="currentPhoto?.webpUrl || currentPhoto?.url" :href="currentPhoto.webpUrl || currentPhoto.url" download class="text-cream/70 hover:text-cream transition-colors text-xs flex items-center gap-1"><Icon name="ph-download-simple" class="size-4" />下载</a>
+        <div class="w-px h-4 bg-cream/20" />
+        <button class="text-cream/70 hover:text-green-400 transition-colors flex items-center gap-1" :class="{ 'text-green-400': autoplay }" @click="toggleAutoplay">
+          <Icon :name="autoplay ? 'ph-pause-circle' : 'ph-play-circle'" class="size-4" />
+          <span class="text-xs">{{ autoplay ? '播放中' : '自动' }}</span>
+        </button>
+      </div>
+    </div>
+  </Teleport>
+</template>
+
+<script setup lang="ts">
+const props = defineProps<{
+  photos: Array<{ id?: string; webpUrl?: string; url?: string; fileName?: string; title?: string }>
+  visible: boolean
+  modelValue?: number
+}>()
+const emit = defineEmits<{
+  (e: 'close'): void
+  (e: 'update:modelValue', v: number): void
+}>()
+
+const index = ref(props.modelValue ?? 0)
+const autoplay = ref(false)
+let timer: ReturnType<typeof setInterval> | null = null
+
+const currentPhoto = computed(() => props.photos[index.value] ?? null)
+
+watch(() => props.visible, (v) => { if (!v) stopAutoplay() })
+watch(() => props.modelValue, (v) => { if (v !== undefined) index.value = v })
+
+const prev = () => { if (index.value > 0) { index.value--; emit('update:modelValue', index.value) } }
+const next = () => { if (index.value < props.photos.length - 1) { index.value++; emit('update:modelValue', index.value) } }
+
+const toggleAutoplay = () => {
+  autoplay.value = !autoplay.value
+  if (autoplay.value) { timer = setInterval(next, 3000) }
+  else if (timer) { clearInterval(timer); timer = null }
+}
+const stopAutoplay = () => { autoplay.value = false; if (timer) { clearInterval(timer); timer = null } }
+
+const onKeydown = (e: KeyboardEvent) => {
+  if (!props.visible) return
+  if (e.key === 'Escape') emit('close')
+  if (e.key === 'ArrowLeft') prev()
+  if (e.key === 'ArrowRight') next()
+}
+
+let touchStartX = 0
+let touchStartY = 0
+
+const onWheel = (e: WheelEvent) => {
+  if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+    if (e.deltaX > 0) next()
+    else prev()
+  } else {
+    if (e.deltaY > 0) next()
+    else prev()
+  }
+}
+
+const onTouchStart = (e: TouchEvent) => {
+  touchStartX = e.touches[0].clientX
+  touchStartY = e.touches[0].clientY
+}
+
+const onTouchMove = (e: TouchEvent) => {}
+
+const onTouchEnd = (e: TouchEvent) => {
+  const dx = e.changedTouches[0].clientX - touchStartX
+  const dy = e.changedTouches[0].clientY - touchStartY
+  const absDx = Math.abs(dx)
+  const absDy = Math.abs(dy)
+  if (Math.max(absDx, absDy) < 50) return
+  if (absDx > absDy) {
+    if (dx > 0) prev()
+    else next()
+  } else {
+    emit('close')
+  }
+}
+
+onMounted(() => document.addEventListener('keydown', onKeydown))
+onUnmounted(() => { document.removeEventListener('keydown', onKeydown); stopAutoplay() })
+</script>
