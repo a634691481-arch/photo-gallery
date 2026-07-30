@@ -1,22 +1,44 @@
 export function useAuth() {
-  const user = useState<any>('user', () => null)
+  const isAuthenticated = useState('auth:authenticated', () => false)
   const loading = useState('auth:loading', () => true)
+  const error = ref('')
+  const router = useRouter()
 
-  const login = async () => {
-    const { data } = await useFetch('/api/auth/wechat')
-    if (data.value?.url) {
-      window.location.href = data.value.url
+  const checkAuth = () => {
+    const cookie = useCookie('family_auth')
+    isAuthenticated.value = cookie.value === '1'
+    loading.value = false
+  }
+
+  const login = async (password: string) => {
+    error.value = ''
+    try {
+      const data = await $fetch('/api/auth/login', {
+        method: 'POST',
+        body: { password },
+      })
+      if (data.success) {
+        isAuthenticated.value = true
+        await router.push('/')
+        return true
+      }
+      error.value = '密码错误'
+      return false
+    } catch {
+      error.value = '登录失败，请重试'
+      return false
     }
   }
 
   const logout = async () => {
-    await useFetch('/api/auth/logout', { method: 'POST' })
-    user.value = null
-    navigateTo('/login')
+    await $fetch('/api/auth/logout', { method: 'POST' })
+    isAuthenticated.value = false
+    router.push('/login')
   }
 
-  const isAdmin = computed(() => user.value?.role === 'admin')
-  const isAuthenticated = computed(() => !!user.value)
+  if (import.meta.client) {
+    checkAuth()
+  }
 
-  return { user, loading, login, logout, isAdmin, isAuthenticated }
+  return { isAuthenticated, loading, error, login, logout }
 }

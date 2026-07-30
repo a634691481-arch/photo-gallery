@@ -16,18 +16,12 @@
 
     <section class="px-4 sm:px-6 pb-24">
       <div class="max-w-6xl mx-auto">
-        <div
-          class="rounded-2xl overflow-hidden bg-cream-dark/20 dark:bg-ink-soft/10 aspect-[2/1] sm:aspect-[3/1] flex items-center justify-center"
-        >
-          <div class="text-center">
-            <img
-              src="/illustrations/finding-way.svg"
-              alt="足迹地图"
-              class="w-48 sm:w-56 mx-auto mb-3 opacity-80"
-            />
-            <p class="text-ink-muted text-sm">地图将在连接数据后显示照片位置</p>
-          </div>
-        </div>
+        <EmptyState
+          image="/illustrations/finding-way.svg"
+          alt="足迹地图"
+          text="地图将在连接数据后显示照片位置"
+          variant="card"
+        />
 
         <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           <div
@@ -45,6 +39,8 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ middleware: 'auth' })
+
 const locations = [
   { name: '北京', count: 45 },
   { name: '上海', count: 32 },

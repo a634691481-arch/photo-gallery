@@ -2,7 +2,7 @@
   <footer class="relative overflow-hidden">
     <div class="max-w-7xl mx-auto px-6 py-24 md:py-32">
       <div class="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8">
-        <div class="md:col-span-5">
+        <div class="md:col-span-4">
           <span class="font-display text-xl font-semibold tracking-tight block mb-4">
             家庭相册
           </span>
@@ -11,7 +11,7 @@
           </p>
         </div>
 
-        <div v-for="group in linkGroups" :key="group.title" class="md:col-span-2">
+        <div v-for="group in linkGroups" :key="group.title" class="md:col-span-2 text-right">
           <span
             class="text-xs font-semibold uppercase tracking-widest text-ink-muted/70 mb-4 block"
           >
@@ -29,7 +29,7 @@
           </ul>
         </div>
 
-        <div class="md:col-span-3 flex flex-col items-start">
+        <div class="md:col-span-4 flex flex-col items-end">
           <NuxtLink
             to="/upload"
             class="px-8 py-3 rounded-full bg-ink text-cream font-display font-medium text-sm transition-all duration-500 hover:scale-105 active:scale-95 hover:shadow-xl"

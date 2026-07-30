@@ -3,35 +3,61 @@
     <div class="w-full max-w-sm">
       <div class="text-center mb-10">
         <span class="text-2xl font-display font-semibold tracking-tight">家庭相册</span>
-        <p class="mt-3 text-ink-muted text-sm">
-          登录查看家庭照片
-        </p>
+        <p class="mt-3 text-ink-muted text-sm">请输入密码以查看家庭照片</p>
       </div>
 
-      <div class="p-8 rounded-2xl bg-surface dark:bg-ink border border-cream-dark/30 dark:border-ink-soft/10">
-        <div class="text-center">
-          <div class="w-48 h-48 mx-auto rounded-xl bg-cream-dark/20 dark:bg-ink-soft/10 flex items-center justify-center mb-4">
-            <div class="text-center">
-              <Icon name="heroicons:qr-code" class="size-16 text-ink-muted/30 block mx-auto" />
-              <span class="text-xs text-ink-muted/40 mt-2 block">二维码</span>
-            </div>
+      <div
+        class="p-8 rounded-2xl bg-surface dark:bg-ink border border-cream-dark/30 dark:border-ink-soft/10"
+      >
+        <form @submit.prevent="handleLogin">
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-2">密码</label>
+            <input
+              v-model="password"
+              type="password"
+              placeholder="请输入家庭密码"
+              class="w-full px-4 py-3 rounded-xl border border-cream-dark/30 dark:border-ink-soft/10 bg-transparent text-sm text-ink dark:text-cream placeholder:text-ink-muted/60 focus:outline-none focus:border-accent transition-colors"
+              :disabled="submitting"
+            />
           </div>
-          <p class="text-sm font-medium">微信扫码登录</p>
-          <p class="text-xs text-ink-muted mt-1">
-            打开微信，扫描二维码登录
-          </p>
-        </div>
 
-        <div class="my-6 flex items-center gap-3">
-          <div class="flex-1 h-px bg-cream-dark/30 dark:bg-ink-soft/10" />
-          <span class="text-xs text-ink-muted/40">或</span>
-          <div class="flex-1 h-px bg-cream-dark/30 dark:bg-ink-soft/10" />
-        </div>
+          <p v-if="errorMsg" class="text-xs text-red-500 mb-4">{{ errorMsg }}</p>
 
-        <p class="text-xs text-center text-ink-muted">
-          首次使用？扫码后需管理员通过审核，即可开始使用。
-        </p>
+          <button
+            type="submit"
+            class="w-full px-6 py-3 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink text-sm font-medium transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            :disabled="submitting || !password"
+          >
+            {{ submitting ? '验证中...' : '登录' }}
+          </button>
+        </form>
       </div>
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+definePageMeta({
+  layout: 'default',
+})
+
+const { login } = useAuth()
+
+const password = ref('')
+const submitting = ref(false)
+const errorMsg = ref('')
+
+const handleLogin = async () => {
+  if (!password.value || submitting.value) return
+  submitting.value = true
+  errorMsg.value = ''
+
+  const success = await login(password.value)
+  if (!success) {
+    errorMsg.value = '密码错误，请重试'
+    password.value = ''
+  }
+
+  submitting.value = false
+}
+</script>

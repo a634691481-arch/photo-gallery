@@ -74,19 +74,6 @@
                   </div>
                 </div>
               </div>
-
-              <button
-                class="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-sm font-medium transition-all duration-300 hover:scale-110 active:scale-95"
-                :class="
-                  photo.liked
-                    ? 'bg-red-500/90 text-cream shadow-lg shadow-red-500/30'
-                    : 'bg-ink/70 text-cream/70 backdrop-blur-sm hover:bg-ink/90 hover:text-cream'
-                "
-                @click.stop="toggleLike(photo)"
-              >
-                <Icon :name="photo.liked ? 'ph-heart-fill' : 'ph-heart'" class="size-4" />
-                <span v-if="photo.likeCount > 0">{{ photo.likeCount }}</span>
-              </button>
             </div>
           </div>
         </div>
@@ -111,6 +98,8 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ middleware: 'auth' })
+
 const { $gsap, $ScrollTrigger } = useNuxtApp()
 
 const selectedMonth = ref('all')
@@ -137,8 +126,6 @@ const photoGroups = ref([
       fileName: `DSC_${1000 + i}.jpg`,
       takenAt: `2026-07-${String(10 + i).padStart(2, '0')}`,
       isVideo: i === 4,
-      likeCount: i % 5 === 0 ? Math.floor(Math.random() * 5) + 1 : 0,
-      liked: false,
     })),
   },
   {
@@ -149,8 +136,6 @@ const photoGroups = ref([
       fileName: `IMG_${2000 + i}.jpg`,
       takenAt: `2026-06-${String(15 + i).padStart(2, '0')}`,
       isVideo: false,
-      likeCount: i % 3 === 0 ? Math.floor(Math.random() * 3) + 1 : 0,
-      liked: false,
     })),
   },
 ])
@@ -167,13 +152,6 @@ const onImgError = (e: Event) => {
   img.style.background = '#25201b'
   img.style.minHeight = '200px'
   img.src = ''
-}
-
-const toggleLike = (photo: any) => {
-  photo.liked = !photo.liked
-  photo.likeCount = photo.liked
-    ? (photo.likeCount || 0) + 1
-    : Math.max(0, (photo.likeCount || 1) - 1)
 }
 
 const openPhoto = (photo: any) => {

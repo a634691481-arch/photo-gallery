@@ -2,11 +2,6 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const { cursor, limit = '30' } = query
 
-  // TODO: Query photos from database with filters
-  // Filter by month/year if provided
-  // Support cursor-based pagination with infinite scroll
-  // Only return non-deleted photos
-
   const photos = Array.from({ length: parseInt(limit as string) }, (_, i) => ({
     id: `photo-${cursor || 'start'}-${i}`,
     originalUrl: `https://picsum.photos/seed/api${Date.now()}${i}/1600/1200`,
@@ -24,10 +19,7 @@ export default defineEventHandler(async (event) => {
     cameraModel: 'iPhone 15 Pro',
     isVideo: i % 5 === 0,
     videoUrl: i % 5 === 0 ? `https://example.com/videos/${i}.mp4` : null,
-    uploadedBy: 'user-1',
-    likeCount: i % 3 === 0 ? Math.floor(Math.random() * 5) + 1 : 0,
-    commentCount: i % 4 === 0 ? 1 : 0,
-    uploader: { nickname: 'Dad', avatarUrl: 'https://picsum.photos/seed/u1/50/50' },
+    uploadedBy: 'system',
   }))
 
   return {

@@ -47,6 +47,8 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ middleware: 'auth' })
+
 const route = useRoute()
 const person = ref({ name: '宝宝 Emma' })
 const previewVisible = ref(false)

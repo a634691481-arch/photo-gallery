@@ -36,6 +36,8 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ middleware: 'auth' })
+
 const title = ref('')
 const description = ref('')
 const handleCreate = async () => {

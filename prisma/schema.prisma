@@ -3,41 +3,23 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id            String    @id @default(uuid())
-  wechatOpenId  String?   @unique @map("wechat_open_id")
-  wechatUnionId String?   @unique @map("wechat_union_id")
-  nickname      String?
-  avatarUrl     String?   @map("avatar_url")
-  role          String    @default("pending") // pending, member, admin
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
+  id        String   @id @default(uuid())
+  role      String   @default("admin")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   albums      Album[]
   photos      Photo[]
   comments    Comment[]
-  likes       Like[]
   faceLabels  FaceLabel[]
-  notifications Notification[]
-  sessions    Session[]
+  anniversaries Anniversary[]
 
   @@map("users")
-}
-
-model Session {
-  id           String   @id @default(uuid())
-  userId       String   @map("user_id")
-  token        String   @unique
-  expiresAt    DateTime @map("expires_at")
-  createdAt    DateTime @default(now()) @map("created_at")
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("sessions")
 }
 
 model Album {
@@ -84,8 +66,7 @@ model Photo {
   albums    AlbumPhoto[]
   faces     DetectedFace[]
   comments  Comment[]
-  likes     Like[]
-  embedding Float[]      @default([])
+  embedding Json        @default("[]")
 
   @@index([takenAt])
   @@index([uploadedBy])
@@ -95,9 +76,9 @@ model Photo {
 }
 
 model AlbumPhoto {
-  albumId   String @map("album_id")
-  photoId   String @map("photo_id")
-  addedAt   DateTime @default(now()) @map("added_at")
+  albumId String   @map("album_id")
+  photoId String   @map("photo_id")
+  addedAt DateTime @default(now()) @map("added_at")
 
   album Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
   photo Photo @relation(fields: [photoId], references: [id], onDelete: Cascade)
@@ -123,7 +104,7 @@ model DetectedFace {
   id          String   @id @default(uuid())
   photoId     String   @map("photo_id")
   faceLabelId String?  @map("face_label_id")
-  descriptor  Float[] // face-api.js descriptor
+  descriptor  Json
   x           Float
   y           Float
   width       Float
@@ -139,66 +120,15 @@ model DetectedFace {
 }
 
 model Comment {
-  id        String    @id @default(uuid())
+  id        String   @id @default(uuid())
   content   String
-  photoId   String    @map("photo_id")
-  userId    String    @map("user_id")
-  createdAt DateTime  @default(now()) @map("created_at")
-  deletedAt DateTime? @map("deleted_at")
+  photoId   String   @map("photo_id")
+  createdAt DateTime @default(now()) @map("created_at")
 
   photo Photo @relation(fields: [photoId], references: [id], onDelete: Cascade)
-  user  User  @relation(fields: [userId], references: [id])
 
   @@index([photoId])
   @@map("comments")
-}
-
-model Like {
-  id        String   @id @default(uuid())
-  photoId   String   @map("photo_id")
-  userId    String   @map("user_id")
-  createdAt DateTime @default(now()) @map("created_at")
-
-  photo Photo @relation(fields: [photoId], references: [id], onDelete: Cascade)
-  user  User  @relation(fields: [userId], references: [id])
-
-  @@unique([photoId, userId])
-  @@map("likes")
-}
-
-model Notification {
-  id        String   @id @default(uuid())
-  userId    String   @map("user_id")
-  type      String   // comment, like, new_photo, join_request, share
-  title     String
-  body      String
-  link      String?
-  read      Boolean  @default(false)
-  createdAt DateTime @default(now()) @map("created_at")
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, read])
-  @@map("notifications")
-}
-
-model ShareLink {
-  id          String   @id @default(uuid())
-  albumId     String   @map("album_id")
-  photoId     String?  @map("photo_id")
-  code        String   @unique
-  password    String?
-  expiresAt   DateTime @map("expires_at")
-  viewCount   Int      @default(0) @map("view_count")
-  createdBy   String   @map("created_by")
-  createdAt   DateTime @default(now()) @map("created_at")
-
-  creator User  @relation(fields: [createdBy], references: [id])
-  album   Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
-
-  @@index([code])
-  @@index([albumId])
-  @@map("share_links")
 }
 
 model Anniversary {

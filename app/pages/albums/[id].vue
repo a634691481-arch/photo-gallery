@@ -43,24 +43,13 @@
         />
       </div>
     </section>
-
-    <div class="fixed bottom-6 right-6 z-40">
-      <button
-        class="px-5 py-3 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink shadow-lg text-sm font-medium transition-all duration-300 hover:scale-105 flex items-center gap-2"
-        @click="showShare = true"
-      >
-        <Icon name="heroicons:share" class="size-4" />
-        分享
-      </button>
-    </div>
-
-    <ShareDialog v-if="showShare" :album-id="album.id" @close="showShare = false" />
   </div>
 </template>
 
 <script setup lang="ts">
+definePageMeta({ middleware: 'auth' })
+
 const route = useRoute()
-const showShare = ref(false)
 const previewVisible = ref(false)
 const previewIndex = ref(0)
 

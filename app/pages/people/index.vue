@@ -47,6 +47,8 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ middleware: 'auth' })
+
 const people = [
   { id: '1', name: '宝宝 Emma', avatar: 'https://picsum.photos/seed/face1/200/200', count: 245 },
   { id: '2', name: '妈妈', avatar: 'https://picsum.photos/seed/face2/200/200', count: 89 },
