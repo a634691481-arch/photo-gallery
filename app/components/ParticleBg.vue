@@ -6,11 +6,22 @@
 const canvas = ref<HTMLCanvasElement>()
 let ctx: CanvasRenderingContext2D
 let raf: number
-let mx = -1000, my = -1000, tx = -1000, ty = -1000
+let mx = -1000,
+  my = -1000,
+  tx = -1000,
+  ty = -1000
 
-interface Flash { x: number; y: number; life: number; maxLife: number; r: number; vx: number; vy: number }
+interface Flash {
+  x: number
+  y: number
+  life: number
+  maxLife: number
+  r: number
+  vx: number
+  vy: number
+}
 let bgParts: { x: number; y: number; vx: number; vy: number; r: number }[] = []
-let trailParts: Flash[] = []
+const trailParts: Flash[] = []
 
 const ACCENT = 'rgba(230,168,124,'
 
@@ -22,7 +33,7 @@ function resize() {
 
 function init() {
   resize()
-  const count = Math.min(50, Math.floor(innerWidth * innerHeight / 20000))
+  const count = Math.min(50, Math.floor((innerWidth * innerHeight) / 20000))
   bgParts = Array.from({ length: count }, () => ({
     x: Math.random() * innerWidth,
     y: Math.random() * innerHeight,
@@ -35,7 +46,8 @@ function init() {
 function emitTrail(x: number, y: number) {
   for (let i = 0; i < 2; i++) {
     trailParts.push({
-      x, y,
+      x,
+      y,
       vx: (Math.random() - 0.5) * 1.5,
       vy: (Math.random() - 0.5) * 1.5,
       r: Math.random() * 1.5 + 0.5,
@@ -48,7 +60,8 @@ function emitTrail(x: number, y: number) {
 
 function loop() {
   if (!ctx || !canvas.value) return
-  const w = canvas.value.width, h = canvas.value.height
+  const w = canvas.value.width,
+    h = canvas.value.height
   ctx.clearRect(0, 0, w, h)
 
   tx += (mx - tx) * 0.06
@@ -73,7 +86,8 @@ function loop() {
   ctx.restore()
 
   for (const p of bgParts) {
-    p.x += p.vx; p.y += p.vy
+    p.x += p.vx
+    p.y += p.vy
     if (p.x < 0 || p.x > w) p.vx *= -1
     if (p.y < 0 || p.y > h) p.vy *= -1
     ctx.save()
@@ -89,9 +103,14 @@ function loop() {
   for (let i = trailParts.length - 1; i >= 0; i--) {
     const t = trailParts[i]
     t.life -= 0.025
-    if (t.life <= 0) { trailParts.splice(i, 1); continue }
-    t.x += t.vx; t.y += t.vy
-    t.vx *= 0.95; t.vy *= 0.95
+    if (t.life <= 0) {
+      trailParts.splice(i, 1)
+      continue
+    }
+    t.x += t.vx
+    t.y += t.vy
+    t.vx *= 0.95
+    t.vy *= 0.95
     const alpha = t.life * 0.4
     ctx.save()
     ctx.shadowColor = ACCENT + alpha + ')'
@@ -106,8 +125,15 @@ function loop() {
   raf = requestAnimationFrame(loop)
 }
 
-function onMouseMove(e: MouseEvent) { mx = e.clientX; my = e.clientY; emitTrail(mx, my) }
-function onMouseLeave() { mx = -1000; my = -1000 }
+function onMouseMove(e: MouseEvent) {
+  mx = e.clientX
+  my = e.clientY
+  emitTrail(mx, my)
+}
+function onMouseLeave() {
+  mx = -1000
+  my = -1000
+}
 
 onMounted(() => {
   if (!canvas.value) return

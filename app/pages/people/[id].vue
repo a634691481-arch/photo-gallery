@@ -3,7 +3,10 @@
     <section class="pt-24 sm:pt-32 pb-8 px-6">
       <div class="max-w-6xl mx-auto">
         <div class="flex items-center gap-4 mb-8">
-          <button @click="navigateTo('/people')" class="p-2 rounded-full hover:bg-cream-dark/30 dark:hover:bg-ink-soft/10 transition-colors">
+          <button
+            class="p-2 rounded-full hover:bg-cream-dark/30 dark:hover:bg-ink-soft/10 transition-colors"
+            @click="navigateTo('/people')"
+          >
             <Icon name="heroicons:arrow-left" class="size-5" />
           </button>
           <div>
@@ -23,7 +26,11 @@
             class="group relative overflow-hidden rounded-2xl bg-cream-dark/20 dark:bg-ink-soft/10 cursor-pointer break-inside-avoid mb-3 sm:mb-4"
             @click="openPreview(idx)"
           >
-            <img :src="photo.webpUrl" class="w-full h-auto object-cover transition-all duration-700 ease-out group-hover:scale-105" loading="lazy" />
+            <img
+              :src="photo.webpUrl"
+              class="w-full h-auto object-cover transition-all duration-700 ease-out group-hover:scale-105"
+              loading="lazy"
+            />
           </div>
         </div>
       </div>

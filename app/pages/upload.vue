@@ -2,13 +2,13 @@
   <div>
     <section class="pt-24 sm:pt-32 md:pt-40 pb-8 px-6">
       <div class="max-w-3xl mx-auto text-center">
-        <h1 class="font-display font-semibold leading-[1.05] tracking-tight text-ink [text-wrap:balance]"
-          style="font-size: clamp(2rem, 4vw, 3.5rem);">
+        <h1
+          class="font-display font-semibold leading-[1.05] tracking-tight text-ink [text-wrap:balance]"
+          style="font-size: clamp(2rem, 4vw, 3.5rem)"
+        >
           上传照片
         </h1>
-        <p class="mt-3 text-ink-muted">
-          把照片拖到这里，剩下的交给我们。
-        </p>
+        <p class="mt-3 text-ink-muted">把照片拖到这里，剩下的交给我们。</p>
       </div>
     </section>
 
@@ -17,9 +17,11 @@
         <div
           ref="dropZone"
           class="relative rounded-2xl border-2 border-dashed p-12 sm:p-16 text-center transition-all duration-300 cursor-pointer"
-          :class="isDragging
-            ? 'border-accent bg-cream-dark/30 dark:bg-ink-soft/10'
-            : 'border-cream-dark/40 dark:border-ink-soft/20 hover:border-ink/50 dark:hover:border-cream/50'"
+          :class="
+            isDragging
+              ? 'border-accent bg-cream-dark/30 dark:bg-ink-soft/10'
+              : 'border-cream-dark/40 dark:border-ink-soft/20 hover:border-ink/50 dark:hover:border-cream/50'
+          "
           @dragenter.prevent="isDragging = true"
           @dragleave.prevent="isDragging = false"
           @dragover.prevent="isDragging = true"
@@ -35,7 +37,9 @@
             @change="handleFileSelect"
           />
           <div class="flex flex-col items-center gap-4">
-            <div class="w-16 h-16 rounded-2xl bg-cream-dark/30 dark:bg-ink-soft/10 flex items-center justify-center">
+            <div
+              class="w-16 h-16 rounded-2xl bg-cream-dark/30 dark:bg-ink-soft/10 flex items-center justify-center"
+            >
               <Icon name="heroicons:cloud-arrow-up" class="size-8 text-ink-muted" />
             </div>
             <div>
@@ -51,7 +55,9 @@
             :key="file.name"
             class="flex items-center gap-4 p-3 rounded-xl bg-cream-dark/20 dark:bg-ink-soft/10"
           >
-            <div class="w-12 h-12 rounded-lg overflow-hidden bg-cream-dark/30 dark:bg-ink-soft/20 shrink-0">
+            <div
+              class="w-12 h-12 rounded-lg overflow-hidden bg-cream-dark/30 dark:bg-ink-soft/20 shrink-0"
+            >
               <img v-if="file.preview" :src="file.preview" class="w-full h-full object-cover" />
             </div>
             <div class="flex-1 min-w-0">
@@ -59,7 +65,9 @@
               <p class="text-xs text-ink-muted">{{ formatSize(file.size) }}</p>
             </div>
             <div class="flex items-center gap-2">
-              <span v-if="file.status === 'uploading'" class="text-xs text-ink-muted">{{ file.progress }}%</span>
+              <span v-if="file.status === 'uploading'" class="text-xs text-ink-muted"
+                >{{ file.progress }}%</span
+              >
               <span v-else-if="file.status === 'done'" class="text-xs text-green-500">完成</span>
               <span v-else-if="file.status === 'error'" class="text-xs text-red-500">失败</span>
               <button
@@ -86,9 +94,9 @@
 
         <div v-if="files.length" class="mt-6 flex justify-center">
           <button
-            @click="startUpload"
             :disabled="uploading"
             class="px-8 py-3 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink font-display font-medium text-sm transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            @click="startUpload"
           >
             {{ uploading ? '上传中...' : `上传 ${files.length} 张照片` }}
           </button>
@@ -160,7 +168,7 @@ const startUpload = async () => {
     if (f.status === 'done') continue
     f.status = 'uploading'
     for (let p = 0; p <= 100; p += 20) {
-      await new Promise(r => setTimeout(r, 200))
+      await new Promise((r) => setTimeout(r, 200))
       f.progress = p
     }
     f.status = 'done'

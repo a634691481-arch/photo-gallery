@@ -11,8 +11,10 @@
           </p>
         </div>
 
-        <div class="md:col-span-2" v-for="group in linkGroups" :key="group.title">
-          <span class="text-xs font-semibold uppercase tracking-widest text-ink-muted/70 mb-4 block">
+        <div v-for="group in linkGroups" :key="group.title" class="md:col-span-2">
+          <span
+            class="text-xs font-semibold uppercase tracking-widest text-ink-muted/70 mb-4 block"
+          >
             {{ group.title }}
           </span>
           <ul class="space-y-2">

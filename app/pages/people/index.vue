@@ -2,8 +2,10 @@
   <div>
     <section class="pt-24 sm:pt-32 md:pt-40 pb-8 px-6">
       <div class="max-w-6xl mx-auto text-center">
-        <h1 class="font-display font-semibold leading-[1.05] tracking-tight text-ink [text-wrap:balance]"
-          style="font-size: clamp(2.5rem, 5vw, 4.5rem);">
+        <h1
+          class="font-display font-semibold leading-[1.05] tracking-tight text-ink [text-wrap:balance]"
+          style="font-size: clamp(2.5rem, 5vw, 4.5rem)"
+        >
           我们的家人
         </h1>
         <p class="mt-3 text-ink-muted text-base max-w-lg mx-auto">
@@ -21,7 +23,9 @@
             class="group text-center cursor-pointer"
             @click="navigateTo(`/people/${person.id}`)"
           >
-            <div class="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto rounded-full overflow-hidden ring-2 ring-cream-dark/30 dark:ring-ink-soft/10 transition-all duration-500 group-hover:ring-accent group-hover:scale-105">
+            <div
+              class="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto rounded-full overflow-hidden ring-2 ring-cream-dark/30 dark:ring-ink-soft/10 transition-all duration-500 group-hover:ring-accent group-hover:scale-105"
+            >
               <img :src="person.avatar" class="w-full h-full object-cover" />
             </div>
             <p class="mt-3 font-display text-sm font-medium">{{ person.name }}</p>
@@ -29,7 +33,9 @@
           </div>
 
           <div class="text-center group cursor-pointer">
-            <div class="w-24 h-24 sm:w-28 sm:h-28 mx-auto rounded-full border-2 border-dashed border-cream-dark/40 dark:border-ink-soft/20 flex items-center justify-center transition-all duration-300 group-hover:border-ink dark:group-hover:border-cream">
+            <div
+              class="w-24 h-24 sm:w-28 sm:h-28 mx-auto rounded-full border-2 border-dashed border-cream-dark/40 dark:border-ink-soft/20 flex items-center justify-center transition-all duration-300 group-hover:border-ink dark:group-hover:border-cream"
+            >
               <Icon name="heroicons:plus" class="size-6 text-ink-muted/40" />
             </div>
             <p class="mt-3 text-sm text-ink-muted">添加人物</p>

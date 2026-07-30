@@ -3,7 +3,10 @@
     class="fixed top-5 sm:top-6 left-1/2 -translate-x-1/2 z-50 px-2 py-2 rounded-full border border-ink-soft/20 bg-ink/60 backdrop-blur-xl shadow-sm"
   >
     <div class="flex items-center gap-1">
-      <NuxtLink to="/" class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full transition-colors hover:bg-ink-soft/10">
+      <NuxtLink
+        to="/"
+        class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full transition-colors hover:bg-ink-soft/10"
+      >
         <span class="font-display text-sm sm:text-base font-semibold tracking-tight text-ink">
           家庭相册
         </span>
@@ -29,7 +32,10 @@
           @click="showNotifications = !showNotifications"
         >
           <Icon name="ph-bell" class="size-4 text-ink-soft" />
-          <span v-if="unreadCount" class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-accent rounded-full" />
+          <span
+            v-if="unreadCount"
+            class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-accent rounded-full"
+          />
         </button>
 
         <NuxtLink
@@ -42,8 +48,8 @@
 
         <button
           v-if="!user"
-          @click="navigateTo('/login')"
           class="px-4 py-2 rounded-full bg-ink text-cream text-xs sm:text-sm font-medium transition-all duration-500 hover:scale-105 active:scale-95"
+          @click="navigateTo('/login')"
         >
           登录
         </button>
@@ -83,10 +89,16 @@
       >
         <div class="flex items-center justify-between mb-3">
           <span class="font-display text-sm font-medium">通知</span>
-          <button class="text-xs text-ink-muted hover:text-ink" @click="showNotifications = false">关闭</button>
+          <button class="text-xs text-ink-muted hover:text-ink" @click="showNotifications = false">
+            关闭
+          </button>
         </div>
         <div class="text-sm text-ink-muted text-center py-6">
-          <img src="/illustrations/happy-news.svg" alt="暂无通知" class="w-32 mx-auto mb-3 opacity-70" />
+          <img
+            src="/illustrations/happy-news.svg"
+            alt="暂无通知"
+            class="w-32 mx-auto mb-3 opacity-70"
+          />
           暂无新通知
         </div>
       </div>
@@ -110,6 +122,12 @@ const links = [
 </script>
 
 <style scoped>
-.fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 </style>

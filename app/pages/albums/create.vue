@@ -3,7 +3,7 @@
     <section class="pt-24 sm:pt-32 md:pt-40 pb-8 px-6">
       <div class="max-w-2xl mx-auto">
         <h1 class="font-display text-2xl sm:text-3xl font-semibold mb-8">新建相册</h1>
-        <form @submit.prevent="handleCreate" class="space-y-6">
+        <form class="space-y-6" @submit.prevent="handleCreate">
           <div>
             <label class="block text-sm font-medium mb-2 text-ink">相册标题</label>
             <input

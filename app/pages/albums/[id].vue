@@ -3,7 +3,10 @@
     <section class="pt-24 sm:pt-32 md:pt-40 pb-8 px-6">
       <div class="max-w-6xl mx-auto">
         <div class="flex items-center gap-4 mb-8">
-          <button @click="navigateTo('/albums')" class="p-2 rounded-full hover:bg-cream-dark/30 dark:hover:bg-ink-soft/10 transition-colors">
+          <button
+            class="p-2 rounded-full hover:bg-cream-dark/30 dark:hover:bg-ink-soft/10 transition-colors"
+            @click="navigateTo('/albums')"
+          >
             <Icon name="heroicons:arrow-left" class="size-5" />
           </button>
           <div>
