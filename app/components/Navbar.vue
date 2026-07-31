@@ -87,7 +87,6 @@ const links = [
   { to: '/', label: '时间线' },
   { to: '/albums', label: '相册' },
 
-  { to: '/map', label: '足迹' },
   { to: '/search', label: '搜索' },
 ]
 </script>

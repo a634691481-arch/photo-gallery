@@ -65,7 +65,6 @@ const linkGroups = [
   {
     title: '发现',
     links: [
-      { label: '足迹', to: '/map' },
       { label: '纪念日', to: '/memories' },
       { label: '搜索', to: '/search' },
     ],
