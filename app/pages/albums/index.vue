@@ -28,12 +28,12 @@
               :alt="album.title"
               class="w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-105"
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/10 to-transparent" />
+            <div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/30 to-transparent" />
             <div class="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-              <h3 class="font-display text-lg sm:text-xl font-medium text-cream">
+              <h3 class="font-display text-lg sm:text-xl font-medium text-white">
                 {{ album.title }}
               </h3>
-              <p class="text-cream/50 text-sm mt-1">{{ album.count }} 张照片</p>
+              <p class="text-white/70 text-sm mt-1">{{ album.count }} 张照片</p>
             </div>
           </div>
 
@@ -74,5 +74,47 @@ const albums = [
     count: 31,
   },
   { id: '5', title: '周末徒步', coverUrl: 'https://picsum.photos/seed/hike/800/600', count: 24 },
+  {
+    id: '6',
+    title: '海边日落',
+    coverUrl: 'https://picsum.photos/seed/sunset/800/600',
+    count: 15,
+  },
+  {
+    id: '7',
+    title: '圣诞聚会',
+    coverUrl: 'https://picsum.photos/seed/christmas/800/600',
+    count: 38,
+  },
+  {
+    id: '8',
+    title: '樱花季',
+    coverUrl: 'https://picsum.photos/seed/sakura/800/600',
+    count: 27,
+  },
+  {
+    id: '9',
+    title: '宝宝百天',
+    coverUrl: 'https://picsum.photos/seed/baby100/800/600',
+    count: 45,
+  },
+  {
+    id: '10',
+    title: '家庭烧烤',
+    coverUrl: 'https://picsum.photos/seed/bbq/800/600',
+    count: 12,
+  },
+  {
+    id: '11',
+    title: '滑雪之旅',
+    coverUrl: 'https://picsum.photos/seed/skiing/800/600',
+    count: 33,
+  },
+  {
+    id: '12',
+    title: '幼儿园毕业',
+    coverUrl: 'https://picsum.photos/seed/graduation/800/600',
+    count: 20,
+  },
 ]
 </script>
