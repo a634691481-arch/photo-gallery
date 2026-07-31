@@ -39,6 +39,13 @@ export default {
           '100%': { transform: 'translateX(-50%)' },
         },
       },
+      boxShadow: {
+        soft: '0 1px 2px rgb(43 37 32 / 0.03), 0 8px 24px rgb(43 37 32 / 0.05)',
+        'soft-lg': '0 2px 4px rgb(43 37 32 / 0.04), 0 16px 48px rgb(43 37 32 / 0.09)',
+      },
+      transitionTimingFunction: {
+        soft: 'var(--ease-soft)',
+      },
     },
   },
   plugins: [],

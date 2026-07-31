@@ -1,18 +1,22 @@
 <template>
   <ClientOnly>
     <Teleport to="body">
-      <div class="fixed top-20 right-5 z-[10000] flex flex-col gap-2 pointer-events-none">
+      <div
+        class="fixed top-20 right-5 z-[var(--z-toast)] flex flex-col gap-2 pointer-events-none"
+        role="status"
+        aria-live="polite"
+      >
         <TransitionGroup name="toast">
           <div
             v-for="t in toasts"
             :key="t.id"
             :class="[
-              'pointer-events-auto px-5 py-3 rounded-2xl text-sm font-medium shadow-lg backdrop-blur-xl flex items-center gap-2 max-w-sm border',
+              'pointer-events-auto px-5 py-3 rounded-2xl text-sm font-medium shadow-soft-lg backdrop-blur-xl flex items-center gap-2 max-w-sm ring-1',
               t.type === 'success'
-                ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border-emerald-500/30'
+                ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 ring-emerald-500/30'
                 : t.type === 'error'
-                  ? 'bg-red-500/15 text-red-600 dark:text-red-300 border-red-500/30'
-                  : 'bg-ink/80 text-cream border-ink-soft/20',
+                  ? 'bg-red-500/15 text-red-600 dark:text-red-300 ring-red-500/30'
+                  : 'bg-ink/80 text-cream ring-ink-soft/20',
             ]"
           >
             <Icon :name="iconName(t.type)" class="size-4 shrink-0" />
@@ -53,7 +57,7 @@ function iconName(type: ToastType): string {
   transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .toast-leave-active {
-  transition: all 0.2s ease-in;
+  transition: all 0.2s var(--ease-soft);
 }
 .toast-enter-from {
   opacity: 0;

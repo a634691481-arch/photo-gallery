@@ -1,14 +1,19 @@
 <template>
   <div>
-    <section class="pt-24 sm:pt-32 md:pt-40 pb-8 px-6">
+    <section class="pt-28 sm:pt-36 md:pt-44 pb-10 sm:pb-14 px-6">
       <div class="max-w-3xl mx-auto text-center">
+        <span
+          class="inline-block px-3 py-1.5 rounded-full text-[10px] uppercase tracking-[0.25em] font-medium bg-ink-soft/5 ring-1 ring-ink-soft/10 text-ink-muted mb-6"
+        >
+          添加回忆
+        </span>
         <h1
           class="font-display font-semibold leading-[1.05] tracking-tight text-ink [text-wrap:balance]"
           style="font-size: clamp(2rem, 4vw, 3.5rem)"
         >
           上传照片
         </h1>
-        <p class="mt-3 text-ink-muted">把照片拖到这里，剩下的交给我们。</p>
+        <p class="mt-5 text-ink-muted">把照片拖到这里，剩下的交给我们。</p>
       </div>
     </section>
 
@@ -16,12 +21,8 @@
       <div class="max-w-2xl mx-auto">
         <div
           ref="dropZone"
-          class="relative rounded-2xl border-2 border-dashed p-12 sm:p-16 text-center transition-all duration-300 cursor-pointer"
-          :class="
-            isDragging
-              ? 'border-accent bg-cream-dark/30 dark:bg-ink-soft/10'
-              : 'border-cream-dark/40 dark:border-ink-soft/20 hover:border-ink/50 dark:hover:border-cream/50'
-          "
+          class="p-1.5 rounded-[1.75rem] bg-ink-soft/5 ring-1 ring-ink-soft/10 transition-all duration-500 ease-soft cursor-pointer"
+          :class="isDragging ? 'ring-accent/60 shadow-soft-lg' : 'shadow-soft'"
           @dragenter.prevent="isDragging = true"
           @dragleave.prevent="isDragging = false"
           @dragover.prevent="isDragging = true"
@@ -36,15 +37,20 @@
             class="hidden"
             @change="handleFileSelect"
           />
-          <div class="flex flex-col items-center gap-4">
-            <div
-              class="w-16 h-16 rounded-2xl bg-cream-dark/30 dark:bg-ink-soft/10 flex items-center justify-center"
-            >
-              <Icon name="heroicons:cloud-arrow-up" class="size-8 text-ink-muted" />
-            </div>
-            <div>
-              <p class="font-display font-medium text-lg">拖拽照片到此处</p>
-              <p class="text-sm text-ink-muted mt-1">或点击浏览文件</p>
+          <div
+            class="rounded-[1.375rem] border-2 border-dashed border-ink-soft/15 dark:border-ink-soft/10 p-12 sm:p-16 text-center transition-all duration-500 ease-soft"
+            :class="isDragging ? 'border-accent/50 bg-accent/5' : 'hover:border-ink-soft/30'"
+          >
+            <div class="flex flex-col items-center gap-4">
+              <div
+                class="w-16 h-16 rounded-2xl bg-cream-dark/40 dark:bg-ink-soft/10 flex items-center justify-center shadow-soft"
+              >
+                <Icon name="heroicons:cloud-arrow-up" class="size-8 text-ink-muted" />
+              </div>
+              <div>
+                <p class="font-display font-medium text-lg">拖拽照片到此处</p>
+                <p class="text-sm text-ink-muted mt-1">或点击浏览文件</p>
+              </div>
             </div>
           </div>
         </div>
@@ -53,12 +59,17 @@
           <div
             v-for="(file, i) in files"
             :key="file.name"
-            class="flex items-center gap-4 p-3 rounded-xl bg-cream-dark/20 dark:bg-ink-soft/10"
+            class="flex items-center gap-4 p-3 rounded-2xl bg-cream-dark/40 dark:bg-ink-soft/10 ring-1 ring-ink-soft/5"
           >
             <div
-              class="w-12 h-12 rounded-lg overflow-hidden bg-cream-dark/30 dark:bg-ink-soft/20 shrink-0"
+              class="w-12 h-12 rounded-lg overflow-hidden bg-cream-dark/40 dark:bg-ink-soft/20 shrink-0"
             >
-              <img v-if="file.preview" :src="file.preview" class="w-full h-full object-cover" />
+              <img
+                v-if="file.preview"
+                :src="file.preview"
+                alt=""
+                class="w-full h-full object-cover"
+              />
             </div>
             <div class="flex-1 min-w-0">
               <p class="text-sm font-medium truncate">{{ file.name }}</p>
@@ -92,19 +103,19 @@
 
     <div
       v-if="files.length"
-      class="fixed bottom-0 left-0 right-0 z-50 border-t border-ink-soft/10 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.06)]"
+      class="fixed bottom-0 left-0 right-0 z-[var(--z-nav)] bg-surface/85 backdrop-blur-xl shadow-[0_-8px_40px_rgb(43_37_32/0.08)]"
     >
-      <div v-if="uploading" class="h-1 bg-ink-soft/15">
+      <div v-if="uploading" class="h-1 bg-ink-soft/10">
         <div
-          class="h-full bg-accent transition-all duration-300"
+          class="h-full bg-accent transition-all duration-500 ease-soft"
           :style="{ width: `${totalProgress}%` }"
         />
       </div>
       <div class="max-w-2xl mx-auto px-4 py-3 flex items-center gap-2 sm:gap-3">
         <select
           v-model="selectedAlbum"
-          class="flex-1 min-w-0 px-3 py-2 rounded-xl border border-ink-soft/20 bg-ink-soft/20 text-sm text-ink focus:outline-none focus:border-accent transition-colors cursor-pointer appearance-none"
-          style="color-scheme: dark"
+          aria-label="选择要加入的相册"
+          class="flex-1 min-w-0 px-3 py-2 rounded-xl bg-ink-soft/5 ring-1 ring-ink-soft/10 text-sm text-ink focus:outline-none focus:ring-accent/60 transition-all duration-300 cursor-pointer appearance-none"
         >
           <option value="" class="bg-surface text-ink-muted">不加入相册</option>
           <option v-for="a in albums" :key="a.id" :value="a.id" class="bg-surface text-ink">
@@ -112,14 +123,14 @@
           </option>
         </select>
         <button
-          class="shrink-0 size-9 rounded-full border border-ink-soft/20 text-ink-muted hover:text-ink hover:border-ink/40 flex items-center justify-center transition-colors"
+          class="shrink-0 size-9 rounded-full bg-ink-soft/5 ring-1 ring-ink-soft/10 text-ink-muted hover:text-ink hover:bg-ink-soft/10 flex items-center justify-center transition-all duration-300"
           title="新建相册"
           @click="showCreateAlbum = true"
         >
           <Icon name="heroicons:plus" class="size-4" />
         </button>
         <button
-          class="shrink-0 px-5 py-2.5 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink text-sm font-medium transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+          class="shrink-0 px-5 py-2.5 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink text-sm font-medium transition-all duration-500 ease-soft hover:scale-[1.02] active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
           :disabled="uploading || !files.length"
           @click="startUpload"
         >
@@ -131,48 +142,50 @@
     <Teleport to="body">
       <div
         v-if="showCreateAlbum"
-        class="fixed inset-0 z-[100] bg-cream/60 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+        class="fixed inset-0 z-[var(--z-dialog)] bg-cream/70 dark:bg-black/70 backdrop-blur-md flex items-center justify-center p-4 overscroll-contain"
         @click.self="showCreateAlbum = false"
         @keydown.enter.prevent="createAlbum"
       >
         <div
-          class="w-full max-w-sm bg-surface dark:bg-ink rounded-2xl p-6 shadow-xl border border-cream-dark/30 dark:border-ink-soft/10 text-ink dark:text-cream"
+          class="w-full max-w-sm p-1.5 rounded-[1.75rem] bg-ink-soft/10 ring-1 ring-ink-soft/10 shadow-soft-lg"
         >
-          <h3 class="font-display font-medium mb-4">新建相册</h3>
-          <div class="space-y-4">
-            <div>
-              <label class="block text-xs font-medium mb-1.5 text-ink-muted">相册名称</label>
-              <input
-                v-model="newAlbumTitle"
-                type="text"
-                placeholder="例如：2026 暑假旅行"
-                class="w-full px-4 py-3 rounded-xl border border-ink-soft/20 bg-transparent text-sm text-ink dark:text-cream placeholder:text-ink-muted/50 focus:outline-none focus:border-accent transition-colors"
-              />
+          <div class="bg-surface dark:bg-surface rounded-[1.375rem] p-6 text-ink dark:text-cream">
+            <h3 class="font-display font-medium mb-4">新建相册</h3>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-xs font-medium mb-1.5 text-ink-muted">相册名称</label>
+                <input
+                  v-model="newAlbumTitle"
+                  type="text"
+                  placeholder="例如：2026 暑假旅行"
+                  class="w-full px-4 py-3 rounded-xl bg-ink-soft/5 ring-1 ring-ink-soft/10 focus:ring-accent/60 text-sm text-ink placeholder:text-ink-muted/50 focus:outline-none transition-all duration-300 ease-soft"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1.5 text-ink-muted">描述（可选）</label>
+                <input
+                  v-model="newAlbumDesc"
+                  type="text"
+                  placeholder="简单描述一下这个相册"
+                  class="w-full px-4 py-3 rounded-xl bg-ink-soft/5 ring-1 ring-ink-soft/10 focus:ring-accent/60 text-sm text-ink placeholder:text-ink-muted/50 focus:outline-none transition-all duration-300 ease-soft"
+                />
+              </div>
             </div>
-            <div>
-              <label class="block text-xs font-medium mb-1.5 text-ink-muted">描述（可选）</label>
-              <input
-                v-model="newAlbumDesc"
-                type="text"
-                placeholder="简单描述一下这个相册"
-                class="w-full px-4 py-3 rounded-xl border border-ink-soft/20 bg-transparent text-sm text-ink dark:text-cream placeholder:text-ink-muted/50 focus:outline-none focus:border-accent transition-colors"
-              />
+            <div class="mt-6 flex gap-3">
+              <button
+                class="flex-1 px-4 py-2.5 rounded-full text-sm text-ink-muted hover:text-ink hover:bg-ink-soft/10 transition-colors duration-300"
+                @click="showCreateAlbum = false"
+              >
+                取消
+              </button>
+              <button
+                class="flex-1 px-4 py-2.5 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink text-sm font-medium transition-all duration-500 ease-soft hover:scale-[1.02] disabled:opacity-50"
+                :disabled="!newAlbumTitle.trim() || creatingAlbum"
+                @click="createAlbum"
+              >
+                {{ creatingAlbum ? '创建中...' : '创建' }}
+              </button>
             </div>
-          </div>
-          <div class="mt-6 flex gap-3">
-            <button
-              class="flex-1 px-4 py-2.5 rounded-full border border-cream-dark/30 dark:border-ink-soft/20 text-sm text-ink-muted hover:text-ink transition-colors"
-              @click="showCreateAlbum = false"
-            >
-              取消
-            </button>
-            <button
-              class="flex-1 px-4 py-2.5 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink text-sm font-medium transition-all duration-300 hover:scale-[1.02] disabled:opacity-50"
-              :disabled="!newAlbumTitle.trim() || creatingAlbum"
-              @click="createAlbum"
-            >
-              {{ creatingAlbum ? '创建中...' : '创建' }}
-            </button>
           </div>
         </div>
       </div>
@@ -182,6 +195,7 @@
 
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
+useHead({ title: '上传照片' })
 
 const { files, uploading, addFiles, removeFile, uploadAll, clear } = useUpload()
 
@@ -249,6 +263,8 @@ const handleFileSelect = (e: Event) => {
 const triggerInput = () => fileInput.value?.click()
 
 const toast = useToast()
+
+useBodyLock(showCreateAlbum)
 
 const startUpload = async () => {
   const { ok, fail } = await uploadAll(selectedAlbum.value || undefined)

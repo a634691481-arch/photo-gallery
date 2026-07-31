@@ -23,7 +23,13 @@ interface Flash {
 let bgParts: { x: number; y: number; vx: number; vy: number; r: number }[] = []
 const trailParts: Flash[] = []
 
-const ACCENT = 'rgba(230,168,124,'
+let ACCENT = 'rgba(230,168,124,'
+
+function readAccent() {
+  const style = getComputedStyle(document.documentElement)
+  const rgb = style.getPropertyValue('--color-accent').trim().split(/\s+/).join(',')
+  if (rgb) ACCENT = `rgba(${rgb},`
+}
 
 function resize() {
   if (!canvas.value) return
@@ -138,6 +144,7 @@ function onMouseLeave() {
 onMounted(() => {
   if (!canvas.value) return
   ctx = canvas.value.getContext('2d')!
+  readAccent()
   init()
   loop()
   addEventListener('resize', resize)

@@ -1,14 +1,19 @@
 <template>
   <div>
-    <section class="pt-24 sm:pt-32 md:pt-40 pb-8 px-6">
+    <section class="pt-28 sm:pt-36 md:pt-44 pb-10 sm:pb-14 px-6">
       <div class="max-w-6xl mx-auto text-center">
+        <span
+          class="inline-block px-3 py-1.5 rounded-full text-[10px] uppercase tracking-[0.25em] font-medium bg-ink-soft/5 ring-1 ring-ink-soft/10 text-ink-muted mb-6"
+        >
+          相册集
+        </span>
         <h1
           class="font-display font-semibold leading-[1.05] tracking-tight text-ink [text-wrap:balance]"
           style="font-size: clamp(2.5rem, 5vw, 4.5rem)"
         >
           我们的相册
         </h1>
-        <p class="mt-3 text-ink-muted text-base max-w-lg mx-auto">
+        <p class="mt-5 text-ink-muted text-base max-w-lg mx-auto leading-relaxed">
           精心挑选的每一个瞬间，每一段故事。
         </p>
       </div>
@@ -24,7 +29,7 @@
         >
           <NuxtLink
             to="/upload"
-            class="inline-flex items-center gap-1.5 mt-4 px-5 py-2.5 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink text-sm font-medium transition-all duration-300 hover:scale-105"
+            class="inline-flex items-center gap-1.5 mt-4 px-5 py-2.5 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink text-sm font-medium transition-all duration-500 ease-soft hover:scale-105 active:scale-95"
           >
             <Icon name="heroicons:cloud-arrow-up" class="size-4" />去上传
           </NuxtLink>
@@ -33,28 +38,26 @@
           <div
             v-for="album in albums"
             :key="album.id"
-            class="group relative overflow-hidden rounded-2xl bg-ink-soft/10 aspect-[4/3] cursor-pointer"
+            class="group relative p-1.5 rounded-[1.375rem] bg-cream-dark/60 dark:bg-ink-soft/10 ring-1 ring-ink-soft/5 shadow-soft transition-all duration-500 ease-soft hover:shadow-soft-lg cursor-pointer"
             @click="navigateTo(`/albums/${album.id}`)"
           >
-            <img
-              :src="album.coverUrl"
-              :alt="album.title"
-              class="w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-105"
-              loading="lazy"
-              @error="onImgError"
-            />
-            <div class="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/20 to-transparent" />
-            <div
-              class="absolute bottom-0 left-0 right-0 px-3.5 py-2.5 bg-ink/60 dark:bg-cream/60 backdrop-blur-md border-t border-cream/10 dark:border-ink/20"
-            >
-              <h3
-                class="font-display text-lg sm:text-xl font-medium text-cream dark:text-ink truncate"
-              >
-                {{ album.title }}
-              </h3>
-              <p class="text-cream/70 dark:text-ink/70 text-sm mt-0.5">
-                {{ album.photoCount }} 张照片
-              </p>
+            <div class="relative overflow-hidden rounded-[1.125rem] aspect-[4/3]">
+              <img
+                :src="album.coverUrl"
+                :alt="album.title"
+                class="w-full h-full object-cover transition-all duration-700 ease-soft group-hover:scale-105"
+                loading="lazy"
+                @error="onImgError"
+              />
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/15 to-transparent opacity-80 transition-opacity duration-500 ease-soft group-hover:opacity-100"
+              />
+              <div class="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
+                <h3 class="font-display text-lg sm:text-xl font-medium text-cream truncate">
+                  {{ album.title }}
+                </h3>
+                <p class="text-cream/70 text-sm mt-0.5">{{ album.photoCount }} 张照片</p>
+              </div>
             </div>
           </div>
         </div>
@@ -65,6 +68,7 @@
 
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
+useHead({ title: '相册' })
 const { data, pending } = useFetch('/api/albums')
 const albums = computed(() => data.value ?? [])
 const { onImgError } = useImgFallback()

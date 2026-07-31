@@ -1,14 +1,21 @@
 <template>
   <div>
-    <section class="pt-24 sm:pt-32 md:pt-40 pb-8 px-6">
+    <section class="pt-28 sm:pt-36 md:pt-44 pb-10 sm:pb-14 px-6">
       <div class="max-w-6xl mx-auto text-center">
+        <span
+          class="inline-block px-3 py-1.5 rounded-full text-[10px] uppercase tracking-[0.25em] font-medium bg-ink-soft/5 ring-1 ring-ink-soft/10 text-ink-muted mb-6"
+        >
+          珍藏
+        </span>
         <h1
           class="font-display font-semibold leading-[1.05] tracking-tight text-ink [text-wrap:balance]"
           style="font-size: clamp(2.5rem, 5vw, 4.5rem)"
         >
           我的收藏
         </h1>
-        <p class="mt-3 text-ink-muted text-base max-w-lg mx-auto">珍藏的心动瞬间，都放在这里。</p>
+        <p class="mt-5 text-ink-muted text-base max-w-lg mx-auto leading-relaxed">
+          珍藏的心动瞬间，都放在这里。
+        </p>
       </div>
     </section>
 
@@ -24,23 +31,25 @@
           <div
             v-for="(photo, idx) in photos"
             :key="photo.id"
-            class="photo-card group relative overflow-hidden rounded-2xl bg-ink-soft/10 cursor-pointer break-inside-avoid mb-3 sm:mb-4"
+            class="photo-card group relative cursor-pointer break-inside-avoid mb-3 sm:mb-4 p-1.5 rounded-[1.375rem] bg-cream-dark/60 dark:bg-ink-soft/10 ring-1 ring-ink-soft/5 shadow-soft transition-all duration-500 ease-soft hover:shadow-soft-lg"
             @click="openPreview(idx)"
           >
-            <img
-              :src="photo.webpUrl"
-              :alt="photo.fileName"
-              loading="lazy"
-              class="w-full h-auto object-cover transition-all duration-700 ease-out group-hover:scale-105"
-              @error="onImgError"
-            />
-            <button
-              class="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-red-500/90 text-cream shadow-lg shadow-red-500/30 text-sm font-medium transition-all duration-300 hover:scale-110 active:scale-95"
-              @click.stop="toggleLike(photo)"
-            >
-              <Icon name="ph-heart-fill" class="size-4" />
-              <span v-if="photo.likeCount > 0">{{ photo.likeCount }}</span>
-            </button>
+            <div class="relative overflow-hidden rounded-[1.125rem]" :style="imgRatio(photo)">
+              <img
+                :src="photo.webpUrl"
+                :alt="photo.fileName"
+                loading="lazy"
+                class="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-soft group-hover:scale-105"
+                @error="onImgError"
+              />
+              <button
+                class="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-accent text-cream shadow-soft text-sm font-medium transition-all duration-500 ease-soft hover:scale-110 active:scale-95"
+                @click.stop="toggleLike(photo)"
+              >
+                <Icon name="heroicons:solid-heart" class="size-4" />
+                <span v-if="photo.likeCount > 0">{{ photo.likeCount }}</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -58,6 +67,7 @@
 
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
+useHead({ title: '收藏' })
 
 const photos = ref<any[]>([])
 const initialLoading = ref(true)
@@ -65,6 +75,14 @@ const previewVisible = ref(false)
 const previewIndex = ref(0)
 const toast = useToast()
 const { onImgError } = useImgFallback()
+
+interface PhotoRatio {
+  width?: number | null
+  height?: number | null
+}
+
+const imgRatio = (photo: PhotoRatio) =>
+  photo.width && photo.height ? { aspectRatio: `${photo.width} / ${photo.height}` } : {}
 
 const openPreview = (idx: number) => {
   previewIndex.value = idx

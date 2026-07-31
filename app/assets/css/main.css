@@ -4,17 +4,41 @@
 
 @layer base {
   :root {
+    color-scheme: light;
     --font-display: 'Georgia', 'Noto Serif SC', 'STSong', 'SimSun', serif;
     --font-body:
       'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Microsoft JhengHei', sans-serif;
-    --color-cream: 26 23 20;
-    --color-cream-dark: 37 32 27;
-    --color-ink: 245 241 232;
-    --color-ink-soft: 216 208 195;
-    --color-ink-muted: 160 150 135;
-    --color-accent: 230 168 124;
-    --color-accent-light: 193 124 83;
-    --color-surface: 18 16 14;
+    --color-cream: 253 251 247;
+    --color-cream-dark: 243 238 229;
+    --color-ink: 43 37 32;
+    --color-ink-soft: 74 66 58;
+    --color-ink-muted: 138 128 117;
+    --color-accent: 193 124 83;
+    --color-accent-light: 161 97 63;
+    --color-surface: 255 255 255;
+    --ease-soft: cubic-bezier(0.32, 0.72, 0, 1);
+    --z-sticky: 30;
+    --z-float: 40;
+    --z-nav: 50;
+    --z-grain: 60;
+    --z-dialog: 100;
+    --z-progress: 200;
+    --z-skip: 400;
+    --z-toast: 500;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --color-cream: 18 16 14;
+      --color-cream-dark: 26 23 20;
+      --color-ink: 245 241 232;
+      --color-ink-soft: 216 208 195;
+      --color-ink-muted: 160 150 135;
+      --color-accent: 230 168 124;
+      --color-accent-light: 193 124 83;
+      --color-surface: 26 23 20;
+    }
   }
 
   * {
@@ -33,10 +57,12 @@
     font-family: var(--font-body);
     background-color: rgb(var(--color-cream));
     color: rgb(var(--color-ink));
+    touch-action: manipulation;
+    font-variant-numeric: tabular-nums;
   }
 
   ::selection {
-    background-color: rgb(var(--color-accent));
+    background-color: rgb(var(--color-accent) / 0.85);
     color: rgb(var(--color-cream));
   }
 
@@ -47,7 +73,7 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background-color: rgb(var(--color-ink-soft));
+    background-color: rgb(var(--color-ink-muted) / 0.4);
     border-radius: 99px;
   }
 
@@ -99,6 +125,15 @@
     border-color: rgb(var(--color-ink-soft));
   }
 
+  .grain-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-grain);
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
   .photo-card {
     will-change: transform;
   }
@@ -114,6 +149,26 @@
     }
     100% {
       transform: translateX(-50%);
+    }
+  }
+
+  .overscroll-contain {
+    overscroll-behavior: contain;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    .marquee-track {
+      animation: none;
     }
   }
 }

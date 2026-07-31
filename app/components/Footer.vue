@@ -36,7 +36,7 @@
         <div class="md:col-span-2 flex flex-col items-center md:items-end">
           <NuxtLink
             to="/upload"
-            class="px-8 py-3 rounded-full bg-ink text-cream font-display font-medium text-sm transition-all duration-500 hover:scale-105 active:scale-95 hover:shadow-xl"
+            class="px-8 py-3 rounded-full bg-ink text-cream font-display font-medium text-sm transition-all duration-500 ease-soft hover:scale-105 active:scale-95 hover:shadow-soft-lg"
           >
             上传回忆
           </NuxtLink>

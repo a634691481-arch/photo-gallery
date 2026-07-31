@@ -7,6 +7,43 @@ export default defineNuxtConfig({
     mode: 'css',
   },
   css: ['~/assets/css/main.css'],
+  app: {
+    head: {
+      title: '家庭相册',
+      titleTemplate: '%s · 家庭相册',
+      htmlAttrs: { lang: 'zh-CN' },
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        ...(() => {
+          const bucket = process.env.NUXT_OSS_BUCKET
+          const region = process.env.NUXT_OSS_REGION
+          return bucket && region
+            ? [
+                {
+                  rel: 'preconnect',
+                  href: `https://${bucket}.${region}.aliyuncs.com`,
+                  crossorigin: '',
+                },
+              ]
+            : []
+        })(),
+      ],
+      meta: [
+        { name: 'theme-color', content: '#FDFBF7' },
+        { name: 'theme-color', media: '(prefers-color-scheme: dark)', content: '#12100E' },
+        {
+          name: 'description',
+          content: '一个属于我们家庭的私密相册，记录成长，留住时光。',
+        },
+        { property: 'og:title', content: '家庭相册' },
+        { property: 'og:type', content: 'website' },
+        {
+          property: 'og:description',
+          content: '一个属于我们家庭的私密相册，记录成长，留住时光。',
+        },
+      ],
+    },
+  },
   nitro: {
     experimental: {
       openAPI: true,

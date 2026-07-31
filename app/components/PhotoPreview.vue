@@ -2,7 +2,7 @@
   <Teleport to="body">
     <div
       v-if="visible"
-      class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-surface/20 backdrop-blur-md"
+      class="fixed inset-0 z-[var(--z-dialog)] flex flex-col items-center justify-center bg-black/60 backdrop-blur-md overscroll-contain"
       @click.self="$emit('close')"
       @wheel.prevent="onWheel"
       @touchstart="onTouchStart"
@@ -10,19 +10,22 @@
       @touchend="onTouchEnd"
     >
       <button
-        class="absolute top-4 right-4 z-10 size-12 flex items-center justify-center rounded-full bg-[#B3AFA9] hover:bg-[#B3AFA9]/80 transition-colors text-cream"
+        class="absolute top-4 right-4 z-10 size-12 flex items-center justify-center rounded-full bg-ink/50 backdrop-blur-md hover:bg-ink/70 transition-colors duration-300 text-cream"
+        aria-label="关闭预览"
         @click="$emit('close')"
       >
         <Icon name="heroicons:x-mark" class="size-6" />
       </button>
       <button
-        class="absolute left-4 top-1/2 -translate-y-1/2 z-10 size-12 flex items-center justify-center rounded-full bg-[#B3AFA9] hover:bg-[#B3AFA9]/80 transition-colors text-cream"
+        class="absolute left-4 top-1/2 -translate-y-1/2 z-10 size-12 flex items-center justify-center rounded-full bg-ink/50 backdrop-blur-md hover:bg-ink/70 transition-colors duration-300 text-cream"
+        aria-label="上一张"
         @click.stop="prev"
       >
         <Icon name="heroicons:chevron-left" class="size-6" />
       </button>
       <button
-        class="absolute right-4 top-1/2 -translate-y-1/2 z-10 size-12 flex items-center justify-center rounded-full bg-[#B3AFA9] hover:bg-[#B3AFA9]/80 transition-colors text-cream"
+        class="absolute right-4 top-1/2 -translate-y-1/2 z-10 size-12 flex items-center justify-center rounded-full bg-ink/50 backdrop-blur-md hover:bg-ink/70 transition-colors duration-300 text-cream"
+        aria-label="下一张"
         @click.stop="next"
       >
         <Icon name="heroicons:chevron-right" class="size-6" />
@@ -35,7 +38,7 @@
       />
 
       <div
-        class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-ink/70 backdrop-blur-xl rounded-full px-5 py-2.5 border border-cream/10"
+        class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-ink/70 backdrop-blur-xl rounded-full px-5 py-2.5 ring-1 ring-cream/10 shadow-soft-lg"
       >
         <span class="text-cream/60 text-xs">{{ index + 1 }} / {{ photos.length }}</span>
         <div class="w-px h-4 bg-cream/20" />

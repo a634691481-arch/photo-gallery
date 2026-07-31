@@ -1,56 +1,65 @@
 <template>
   <main class="overflow-x-hidden w-full max-w-full">
-    <section id="content" class="pt-24 sm:pt-32 md:pt-40 pb-8 sm:pb-12 px-6">
+    <section id="content" class="pt-28 sm:pt-36 md:pt-44 pb-10 sm:pb-14 px-6">
       <div class="max-w-6xl mx-auto text-center">
+        <span
+          class="hero-reveal inline-block px-3 py-1.5 rounded-full text-[10px] uppercase tracking-[0.25em] font-medium bg-ink-soft/5 ring-1 ring-ink-soft/10 text-ink-muted mb-6"
+        >
+          私密家庭相册
+        </span>
         <h1
-          class="font-display font-semibold leading-[1.05] tracking-tight text-ink [text-wrap:balance]"
-          style="font-size: clamp(2.5rem, 5vw, 5rem)"
+          class="hero-reveal font-display font-semibold leading-[1.05] tracking-tight text-ink [text-wrap:balance]"
+          style="font-size: clamp(2.75rem, 6vw, 5.5rem)"
         >
           值得 珍藏的 瞬间
         </h1>
         <p
-          class="mt-4 sm:mt-6 text-ink-muted text-base sm:text-lg max-w-lg mx-auto leading-relaxed"
+          class="hero-reveal mt-6 sm:mt-8 text-ink-muted text-base sm:text-lg max-w-md mx-auto leading-relaxed"
         >
           一个属于我们家庭的私密相册，记录成长，留住时光。
         </p>
       </div>
     </section>
 
-    <section class="sticky top-[4.5rem] z-40 px-6 pb-4">
+    <section class="sticky top-[4.5rem] z-[var(--z-float)] px-6 pb-4">
       <div class="max-w-7xl mx-auto">
-        <div class="flex items-center gap-2 overflow-x-auto py-2 no-scrollbar">
-          <button
-            v-for="m in months"
-            :key="m.value"
-            class="shrink-0 px-4 py-2 text-xs sm:text-sm rounded-full transition-all duration-300 whitespace-nowrap"
-            :class="
-              selectedMonth === m.value
-                ? 'bg-ink text-cream'
-                : 'bg-ink-soft/10 text-ink-muted hover:text-ink hover:bg-ink-soft/20'
-            "
-            @click="selectedMonth = m.value"
-          >
-            {{ m.label }}
-          </button>
-          <div class="ml-auto hidden lg:flex items-center gap-2 shrink-0">
+        <div
+          class="p-1 rounded-full bg-surface/70 backdrop-blur-xl shadow-soft ring-1 ring-ink-soft/10"
+        >
+          <div class="flex items-center gap-1 overflow-x-auto py-1 no-scrollbar">
             <button
-              v-if="batchMode"
-              class="px-4 py-2 text-xs sm:text-sm rounded-full border border-ink-soft/20 text-ink-muted hover:text-ink hover:border-ink/40 transition-all duration-300 whitespace-nowrap"
-              @click="toggleSelectAll"
-            >
-              {{ allSelected ? '取消全选' : '全选' }}
-            </button>
-            <button
-              class="px-4 py-2 text-xs sm:text-sm rounded-full border transition-all duration-300 whitespace-nowrap"
+              v-for="m in months"
+              :key="m.value"
+              class="shrink-0 px-4 py-2 text-xs sm:text-sm rounded-full transition-all duration-500 ease-soft whitespace-nowrap"
               :class="
-                batchMode
-                  ? 'bg-accent text-cream border-accent'
-                  : 'border-ink-soft/20 text-ink-muted hover:text-ink hover:border-ink/40'
+                selectedMonth === m.value
+                  ? 'bg-ink text-cream shadow-soft'
+                  : 'text-ink-muted hover:text-ink hover:bg-ink-soft/10'
               "
-              @click="toggleBatchMode"
+              @click="selectMonth(m.value)"
             >
-              {{ batchMode ? `完成 (${selectedIds.length})` : '批量管理' }}
+              {{ m.label }}
             </button>
+            <div class="ml-auto hidden lg:flex items-center gap-1 shrink-0">
+              <button
+                v-if="batchMode"
+                class="px-4 py-2 text-xs sm:text-sm rounded-full text-ink-muted hover:text-ink hover:bg-ink-soft/10 transition-all duration-500 ease-soft whitespace-nowrap"
+                @click="toggleSelectAll"
+              >
+                {{ allSelected ? '取消全选' : '全选' }}
+              </button>
+              <button
+                class="px-4 py-2 text-xs sm:text-sm rounded-full transition-all duration-500 ease-soft whitespace-nowrap"
+                :class="
+                  batchMode
+                    ? 'bg-accent text-cream shadow-soft'
+                    : 'text-ink-muted hover:text-ink hover:bg-ink-soft/10'
+                "
+                @click="toggleBatchMode"
+              >
+                {{ batchMode ? `完成 (${selectedIds.length})` : '批量管理' }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -69,7 +78,7 @@
           class="month-group mb-16 sm:mb-20 scroll-mt-32"
           :data-label="group.label"
         >
-          <div class="sticky top-[7.5rem] z-30 mb-6 sm:mb-8 py-2">
+          <div class="sticky top-[7.5rem] z-[var(--z-sticky)] mb-6 sm:mb-8 py-2">
             <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-ink">
               {{ group.label }}
             </h2>
@@ -78,61 +87,64 @@
             <div
               v-for="photo in group.photos"
               :key="photo.id"
-              class="photo-card group relative overflow-hidden rounded-2xl bg-ink-soft/10 cursor-pointer break-inside-avoid mb-3 sm:mb-4 transition-all duration-200"
-              :class="
-                batchMode && isSelected(photo.id)
-                  ? 'ring-2 ring-[#EC5255]/90 shadow-lg shadow-[#EC5255]/25'
-                  : ''
-              "
+              class="photo-card group relative cursor-pointer break-inside-avoid mb-3 sm:mb-4 p-1.5 rounded-[1.375rem] bg-cream-dark/60 dark:bg-ink-soft/10 ring-1 ring-ink-soft/5 shadow-soft transition-all duration-500 ease-soft hover:shadow-soft-lg"
+              :class="batchMode && isSelected(photo.id) ? '!ring-2 !ring-accent/80' : ''"
               @click="batchMode ? toggleSelect(photo) : openPhoto(photo)"
             >
-              <button
-                v-if="batchMode"
-                class="absolute top-3 left-3 z-10 size-6 rounded-full flex items-center justify-center transition-all duration-200"
-                :class="
-                  isSelected(photo.id)
-                    ? 'bg-[#EC5255] text-cream'
-                    : 'bg-ink/60 backdrop-blur-sm text-transparent hover:text-[#EC5255]'
-                "
-                @click.stop="toggleSelect(photo)"
-              >
-                <Icon name="heroicons:check" class="size-4" />
-              </button>
-              <img
-                :src="photo.webpUrl"
-                :alt="photo.fileName"
-                loading="lazy"
-                class="w-full h-auto object-cover transition-all duration-700 ease-out group-hover:scale-105 group-active:scale-105"
-                @error="onImgError"
-              />
-              <div
-                class="absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-transparent opacity-0 md:group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-500"
-              >
-                <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
-                  <div class="flex items-center gap-2">
-                    <span v-if="photo.isVideo" class="text-cream/80 text-xs flex items-center gap-1"
-                      ><Icon name="ph-play-circle-fill" class="size-3"
-                    /></span>
-                    <span class="text-cream/60 text-xs">{{ formatDate(photo.takenAt) }}</span>
+              <div class="relative overflow-hidden rounded-[1.125rem]" :style="imgRatio(photo)">
+                <button
+                  v-if="batchMode"
+                  class="absolute top-3 left-3 z-10 size-6 rounded-full flex items-center justify-center transition-all duration-300 ease-soft"
+                  :class="
+                    isSelected(photo.id)
+                      ? 'bg-accent text-cream'
+                      : 'bg-ink/60 backdrop-blur-sm text-transparent hover:text-accent'
+                  "
+                  @click.stop="toggleSelect(photo)"
+                >
+                  <Icon name="heroicons:check" class="size-4" />
+                </button>
+                <img
+                  :src="photo.webpUrl"
+                  :alt="photo.fileName"
+                  loading="lazy"
+                  class="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-soft group-hover:scale-105 group-active:scale-105"
+                  @error="onImgError"
+                />
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-transparent opacity-0 md:group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-500 ease-soft"
+                >
+                  <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
+                    <div class="flex items-center gap-2">
+                      <span
+                        v-if="photo.isVideo"
+                        class="text-cream/80 text-xs flex items-center gap-1"
+                        ><Icon name="heroicons:play-circle" class="size-3"
+                      /></span>
+                      <span class="text-cream/60 text-xs">{{ formatDate(photo.takenAt) }}</span>
+                    </div>
                   </div>
                 </div>
+                <button
+                  class="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-sm font-medium transition-all duration-500 ease-soft hover:scale-110 active:scale-95"
+                  :class="
+                    photo.liked
+                      ? 'bg-accent text-cream shadow-soft'
+                      : 'bg-ink/70 text-cream/70 backdrop-blur-sm hover:bg-ink/90 hover:text-cream'
+                  "
+                  @click.stop="toggleLike(photo)"
+                >
+                  <Icon
+                    :name="photo.liked ? 'heroicons:solid-heart' : 'heroicons:heart'"
+                    class="size-4"
+                  />
+                  <span v-if="photo.likeCount > 0">{{ photo.likeCount }}</span>
+                </button>
               </div>
-              <button
-                class="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-sm font-medium transition-all duration-300 hover:scale-110 active:scale-95"
-                :class="
-                  photo.liked
-                    ? 'bg-red-500/90 text-cream shadow-lg shadow-red-500/30'
-                    : 'bg-ink/70 text-cream/70 backdrop-blur-sm hover:bg-ink/90 hover:text-cream'
-                "
-                @click.stop="toggleLike(photo)"
-              >
-                <Icon :name="photo.liked ? 'ph-heart-fill' : 'ph-heart'" class="size-4" />
-                <span v-if="photo.likeCount > 0">{{ photo.likeCount }}</span>
-              </button>
             </div>
           </div>
         </div>
-        <div ref="loadTrigger" class="flex justify-center py-12">
+        <div ref="loadTrigger" class="flex justify-center py-12" aria-live="polite">
           <div v-if="loadingMore" class="flex items-center gap-2 text-ink-muted">
             <Icon name="heroicons:arrow-path" class="size-5 animate-spin" />加载中...
           </div>
@@ -147,7 +159,7 @@
 
     <div
       v-if="batchMode"
-      class="hidden lg:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-50 items-center gap-4 px-5 py-3 rounded-full bg-ink/85 backdrop-blur-2xl border border-ink-soft/10 shadow-xl"
+      class="hidden lg:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-[var(--z-nav)] items-center gap-4 px-5 py-3 rounded-full bg-ink/85 backdrop-blur-2xl ring-1 ring-cream/10 shadow-soft-lg"
     >
       <span class="text-cream/80 text-sm whitespace-nowrap">
         已选 <span class="font-medium text-cream">{{ selectedIds.length }}</span> 张
@@ -180,84 +192,88 @@
     <Teleport to="body">
       <div
         v-if="showMoveDialog"
-        class="fixed inset-0 z-[100] bg-cream/60 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+        class="fixed inset-0 z-[var(--z-dialog)] bg-cream/70 dark:bg-black/70 backdrop-blur-md flex items-center justify-center p-4 overscroll-contain"
         @click.self="showMoveDialog = false"
         @keydown.enter.prevent="moveSelected"
       >
         <div
-          class="w-full max-w-sm bg-surface dark:bg-ink rounded-2xl p-6 shadow-xl border border-cream-dark/30 dark:border-ink-soft/10 text-ink dark:text-cream"
+          class="w-full max-w-sm p-1.5 rounded-[1.75rem] bg-ink-soft/10 ring-1 ring-ink-soft/10 shadow-soft-lg"
         >
-          <h3 class="font-display font-medium mb-4">移入相册</h3>
-          <div v-if="moveAlbumsLoading" class="text-sm text-ink-muted py-4 text-center">
-            加载中...
-          </div>
-          <div v-else class="max-h-64 overflow-y-auto space-y-2">
-            <label
-              v-for="a in moveAlbums"
-              :key="a.id"
-              class="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors"
-              :class="
-                targetAlbumId === a.id
-                  ? 'bg-accent/10 ring-1 ring-accent/40'
-                  : 'hover:bg-ink-soft/10'
-              "
+          <div class="bg-surface dark:bg-surface rounded-[1.375rem] p-6 text-ink dark:text-cream">
+            <h3 class="font-display font-medium mb-4">移入相册</h3>
+            <div v-if="moveAlbumsLoading" class="text-sm text-ink-muted py-4 text-center">
+              加载中...
+            </div>
+            <div v-else class="max-h-64 overflow-y-auto space-y-2">
+              <label
+                v-for="a in moveAlbums"
+                :key="a.id"
+                class="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors duration-300 ease-soft"
+                :class="
+                  targetAlbumId === a.id
+                    ? 'bg-accent/10 ring-1 ring-accent/40'
+                    : 'hover:bg-ink-soft/10'
+                "
+              >
+                <input
+                  v-model="targetAlbumId"
+                  type="radio"
+                  :value="a.id"
+                  class="accent-accent size-4 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-surface rounded-full"
+                />
+                <span class="flex-1 text-sm truncate">{{ a.title }}</span>
+                <span class="text-xs text-ink-muted shrink-0">{{ a.photoCount }} 张</span>
+              </label>
+              <NuxtLink
+                to="/albums/create"
+                class="flex items-center justify-center gap-1.5 p-3 rounded-xl text-sm text-ink-muted hover:text-ink hover:bg-ink-soft/10 transition-colors duration-300"
+                @click="showMoveDialog = false"
+              >
+                <Icon name="heroicons:plus" class="size-4" />新建相册
+              </NuxtLink>
+            </div>
+            <button
+              class="mt-5 w-full py-2.5 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink text-sm font-medium transition-all duration-500 ease-soft hover:scale-[1.02] disabled:opacity-40"
+              :disabled="!targetAlbumId || moving"
+              @click="moveSelected"
             >
-              <input
-                v-model="targetAlbumId"
-                type="radio"
-                :value="a.id"
-                class="accent-[#EC5255] size-4 focus:outline-none focus:ring-2 focus:ring-[#EC5255]/40 focus:ring-offset-2 focus:ring-offset-surface rounded-full"
-              />
-              <span class="flex-1 text-sm truncate">{{ a.title }}</span>
-              <span class="text-xs text-ink-muted shrink-0">{{ a.photoCount }} 张</span>
-            </label>
-            <NuxtLink
-              to="/albums/create"
-              class="flex items-center justify-center gap-1.5 p-3 rounded-xl text-sm text-ink-muted hover:text-ink hover:bg-ink-soft/10 transition-colors"
-              @click="showMoveDialog = false"
-            >
-              <Icon name="heroicons:plus" class="size-4" />新建相册
-            </NuxtLink>
+              {{ moving ? '移入中...' : `移入 ${selectedIds.length} 张照片` }}
+            </button>
           </div>
-          <button
-            class="mt-5 w-full py-2.5 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink text-sm font-medium transition-all duration-300 hover:scale-[1.02] disabled:opacity-40"
-            :disabled="!targetAlbumId || moving"
-            @click="moveSelected"
-          >
-            {{ moving ? '移入中...' : `移入 ${selectedIds.length} 张照片` }}
-          </button>
         </div>
       </div>
 
       <div
         v-if="showDeleteConfirm"
-        class="fixed inset-0 z-[100] bg-cream/60 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+        class="fixed inset-0 z-[var(--z-dialog)] bg-cream/70 dark:bg-black/70 backdrop-blur-md flex items-center justify-center p-4 overscroll-contain"
         @click.self="showDeleteConfirm = false"
         @keydown.enter.prevent="deleteSelected"
       >
         <div
-          class="w-full max-w-sm bg-surface dark:bg-ink rounded-2xl p-6 shadow-xl border border-cream-dark/30 dark:border-ink-soft/10 text-ink dark:text-cream"
+          class="w-full max-w-sm p-1.5 rounded-[1.75rem] bg-ink-soft/10 ring-1 ring-ink-soft/10 shadow-soft-lg"
         >
-          <h3 class="font-display font-medium mb-2">删除照片</h3>
-          <p class="text-sm text-ink-muted mb-6">
-            确定要删除选中的
-            <span class="text-red-500 font-medium">{{ selectedIds.length }}</span>
-            张照片吗？此操作不可恢复。
-          </p>
-          <div class="flex gap-3">
-            <button
-              class="flex-1 px-4 py-2.5 rounded-full border border-cream-dark/30 dark:border-ink-soft/20 text-sm text-ink-muted hover:text-ink transition-colors"
-              @click="showDeleteConfirm = false"
-            >
-              取消
-            </button>
-            <button
-              class="flex-1 px-4 py-2.5 rounded-full bg-red-500 text-cream text-sm font-medium transition-all duration-300 hover:scale-[1.02] disabled:opacity-50"
-              :disabled="deleting"
-              @click="deleteSelected"
-            >
-              {{ deleting ? '删除中...' : '确认删除' }}
-            </button>
+          <div class="bg-surface dark:bg-surface rounded-[1.375rem] p-6 text-ink dark:text-cream">
+            <h3 class="font-display font-medium mb-2">删除照片</h3>
+            <p class="text-sm text-ink-muted mb-6">
+              确定要删除选中的
+              <span class="text-red-500 font-medium">{{ selectedIds.length }}</span>
+              张照片吗？此操作不可恢复。
+            </p>
+            <div class="flex gap-3">
+              <button
+                class="flex-1 px-4 py-2.5 rounded-full text-sm text-ink-muted hover:text-ink hover:bg-ink-soft/10 transition-colors duration-300"
+                @click="showDeleteConfirm = false"
+              >
+                取消
+              </button>
+              <button
+                class="flex-1 px-4 py-2.5 rounded-full bg-red-500 text-cream text-sm font-medium transition-all duration-500 ease-soft hover:scale-[1.02] disabled:opacity-50"
+                :disabled="deleting"
+                @click="deleteSelected"
+              >
+                {{ deleting ? '删除中...' : '确认删除' }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -275,9 +291,12 @@
 
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
+useHead({ title: '时间线' })
 const { $gsap, $ScrollTrigger } = useNuxtApp()
 
-const selectedMonth = ref('all')
+const route = useRoute()
+const router = useRouter()
+const selectedMonth = ref(typeof route.query.month === 'string' ? route.query.month : 'all')
 const previewVisible = ref(false)
 const previewIndex = ref(0)
 const allPhotos = ref<any[]>([])
@@ -296,6 +315,31 @@ const moveAlbumsLoading = ref(false)
 const moving = ref(false)
 const deleting = ref(false)
 const toast = useToast()
+const { onImgError } = useImgFallback()
+
+useBodyLock(showMoveDialog)
+useBodyLock(showDeleteConfirm)
+
+interface PhotoRatio {
+  width?: number | null
+  height?: number | null
+}
+
+const imgRatio = (photo: PhotoRatio) =>
+  photo.width && photo.height ? { aspectRatio: `${photo.width} / ${photo.height}` } : {}
+
+const selectMonth = (m: string) => {
+  selectedMonth.value = m
+  router.replace({ query: m === 'all' ? {} : { month: m } })
+}
+
+watch(
+  () => route.query.month,
+  (v) => {
+    const m = typeof v === 'string' ? v : 'all'
+    if (m !== selectedMonth.value) selectedMonth.value = m
+  },
+)
 
 const isSelected = (id: string) => selectedIds.value.includes(id)
 
@@ -398,7 +442,6 @@ const photoGroups = computed(() => {
 
 const formatDate = (d: string | null) =>
   d ? new Date(d).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }) : ''
-const { onImgError } = useImgFallback()
 
 const sideMonths = computed(() => photoGroups.value.map((g) => g.label))
 const toggleLike = async (photo: any) => {
@@ -479,10 +522,27 @@ watch(selectedMonth, () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 })
 
+let observer: IntersectionObserver | undefined
+
 onMounted(async () => {
+  if ($gsap) {
+    $gsap.fromTo(
+      '.hero-reveal',
+      { opacity: 0, y: 40, blur: 6 },
+      {
+        opacity: 1,
+        y: 0,
+        blur: 0,
+        duration: 1,
+        ease: 'power3.out',
+        stagger: 0.12,
+        delay: 0.1,
+      },
+    )
+  }
   await fetchPhotos()
   if (loadTrigger.value) {
-    const observer = new IntersectionObserver(
+    observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) fetchPhotos()
       },
@@ -490,18 +550,10 @@ onMounted(async () => {
     )
     observer.observe(loadTrigger.value)
   }
-  window.addEventListener('scroll', onScroll, { passive: true })
 })
 
-const onScroll = () => {
-  if (loadTrigger.value && hasMore.value && !loadingMore.value) {
-    const rect = loadTrigger.value.getBoundingClientRect()
-    if (rect.top < window.innerHeight + 300) fetchPhotos()
-  }
-}
-
 onBeforeUnmount(() => {
-  window.removeEventListener('scroll', onScroll)
+  if (observer) observer.disconnect()
 })
 </script>
 

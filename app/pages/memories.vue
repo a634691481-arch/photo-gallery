@@ -1,8 +1,8 @@
 <template>
   <div>
-    <section class="pt-24 sm:pt-32 md:pt-40 pb-8 px-6">
+    <section class="pt-28 sm:pt-36 md:pt-44 pb-10 sm:pb-14 px-6">
       <div class="max-w-2xl mx-auto">
-        <div class="flex items-center justify-between gap-4 mb-4">
+        <div class="flex items-center justify-between gap-4 mb-6">
           <h1
             class="font-display font-semibold leading-[1.05] tracking-tight text-ink [text-wrap:balance]"
             style="font-size: clamp(2.5rem, 5vw, 4.5rem)"
@@ -10,7 +10,7 @@
             纪念日与回忆
           </h1>
           <button
-            class="shrink-0 px-5 py-2.5 rounded-full bg-ink text-cream text-sm font-medium transition-all duration-300 hover:scale-105 active:scale-95"
+            class="shrink-0 px-5 py-2.5 rounded-full bg-ink text-cream text-sm font-medium transition-all duration-500 ease-soft hover:scale-105 active:scale-95 shadow-soft"
             @click="showForm = !showForm"
           >
             <span class="flex items-center gap-1.5">
@@ -18,7 +18,7 @@
             </span>
           </button>
         </div>
-        <p class="text-ink-muted text-base max-w-lg">
+        <p class="text-ink-muted text-base max-w-lg leading-relaxed">
           家庭的重要日子与提醒，不错过任何一个特别的时刻。
         </p>
       </div>
@@ -28,53 +28,54 @@
       <div class="max-w-2xl mx-auto">
         <form
           v-if="showForm"
-          class="mb-6 p-5 sm:p-6 rounded-2xl bg-ink-soft/10 space-y-4"
+          class="mb-8 p-1.5 rounded-[1.75rem] bg-ink-soft/5 ring-1 ring-ink-soft/10 shadow-soft"
           @submit.prevent="handleCreate"
         >
-          <div>
-            <label class="block text-sm font-medium mb-2">标题</label>
-            <input
-              v-model="form.title"
-              type="text"
-              required
-              placeholder="例如：宝宝 Emma 生日"
-              class="w-full px-4 py-3 rounded-xl border border-ink-soft/20 bg-transparent text-ink placeholder:text-ink-muted/50 focus:outline-none focus:border-accent text-sm transition-colors"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-2">日期</label>
-            <input
-              v-model="form.date"
-              type="date"
-              required
-              class="w-full px-4 py-3 rounded-xl border border-ink-soft/20 bg-ink-soft/10 text-ink focus:outline-none focus:border-accent text-sm transition-colors"
-              style="color-scheme: dark"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-2">描述（可选）</label>
-            <input
-              v-model="form.description"
-              type="text"
-              placeholder="这一天有什么特别的？"
-              class="w-full px-4 py-3 rounded-xl border border-ink-soft/20 bg-transparent text-ink placeholder:text-ink-muted/50 focus:outline-none focus:border-accent text-sm transition-colors"
-            />
-          </div>
-          <div class="flex gap-3">
-            <button
-              type="submit"
-              :disabled="submitting"
-              class="px-6 py-2.5 rounded-full bg-ink text-cream text-sm font-medium transition-all duration-300 hover:scale-105 disabled:opacity-50"
-            >
-              {{ submitting ? '保存中...' : '保存' }}
-            </button>
-            <button
-              type="button"
-              class="px-6 py-2.5 rounded-full text-sm text-ink-muted hover:text-ink transition-colors"
-              @click="showForm = false"
-            >
-              取消
-            </button>
+          <div class="p-5 sm:p-6 rounded-[1.375rem] bg-surface dark:bg-surface space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">标题</label>
+              <input
+                v-model="form.title"
+                type="text"
+                required
+                placeholder="例如：宝宝 Emma 生日"
+                class="w-full px-4 py-3 rounded-xl bg-ink-soft/5 ring-1 ring-ink-soft/10 focus:ring-accent/60 text-sm text-ink placeholder:text-ink-muted/50 focus:outline-none transition-all duration-300 ease-soft"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">日期</label>
+              <input
+                v-model="form.date"
+                type="date"
+                required
+                class="w-full px-4 py-3 rounded-xl bg-ink-soft/5 ring-1 ring-ink-soft/10 focus:ring-accent/60 text-sm text-ink focus:outline-none transition-all duration-300 ease-soft"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">描述（可选）</label>
+              <input
+                v-model="form.description"
+                type="text"
+                placeholder="这一天有什么特别的？"
+                class="w-full px-4 py-3 rounded-xl bg-ink-soft/5 ring-1 ring-ink-soft/10 focus:ring-accent/60 text-sm text-ink placeholder:text-ink-muted/50 focus:outline-none transition-all duration-300 ease-soft"
+              />
+            </div>
+            <div class="flex gap-3">
+              <button
+                type="submit"
+                :disabled="submitting"
+                class="px-6 py-2.5 rounded-full bg-ink text-cream text-sm font-medium transition-all duration-500 ease-soft hover:scale-105 disabled:opacity-50"
+              >
+                {{ submitting ? '保存中...' : '保存' }}
+              </button>
+              <button
+                type="button"
+                class="px-6 py-2.5 rounded-full text-sm text-ink-muted hover:text-ink hover:bg-ink-soft/10 transition-colors duration-300"
+                @click="showForm = false"
+              >
+                取消
+              </button>
+            </div>
           </div>
         </form>
 
@@ -84,10 +85,10 @@
           <div
             v-for="item in anniversaries"
             :key="item.id"
-            class="flex items-center gap-4 p-4 sm:p-5 rounded-xl bg-ink-soft/10 hover:bg-ink-soft/20 transition-colors group"
+            class="flex items-center gap-4 p-4 sm:p-5 rounded-2xl bg-cream-dark/40 dark:bg-ink-soft/10 ring-1 ring-ink-soft/5 shadow-soft transition-all duration-500 ease-soft hover:shadow-soft-lg group"
           >
             <div
-              class="w-12 h-12 rounded-xl bg-ink-soft/20 flex items-center justify-center shrink-0"
+              class="w-12 h-12 rounded-xl bg-ink-soft/10 ring-1 ring-ink-soft/10 flex items-center justify-center shrink-0"
             >
               <span class="font-display text-lg font-semibold">{{ item.day }}</span>
             </div>
@@ -116,6 +117,7 @@
 
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
+useHead({ title: '纪念日' })
 
 const { data, pending, refresh } = useFetch('/api/memories')
 const anniversaries = computed(() => data.value ?? [])

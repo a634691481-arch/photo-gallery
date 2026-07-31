@@ -1,9 +1,9 @@
 <template>
   <Transition
-    enter-active-class="transition-all duration-300"
+    enter-active-class="transition-all duration-500 ease-soft"
     enter-from-class="opacity-0 translate-y-4"
     enter-to-class="opacity-100 translate-y-0"
-    leave-active-class="transition-all duration-300"
+    leave-active-class="transition-all duration-500 ease-soft"
     leave-from-class="opacity-100 translate-y-0"
     leave-to-class="opacity-0 translate-y-4"
   >
@@ -11,21 +11,10 @@
       v-show="visible"
       type="button"
       aria-label="回到顶部"
-      class="fixed bottom-6 right-6 z-40 size-11 rounded-full border border-ink-soft/20 bg-ink/60 backdrop-blur-xl text-ink-soft hover:text-ink hover:border-ink/40 shadow-sm transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center"
+      class="fixed bottom-6 right-6 z-[var(--z-float)] size-11 rounded-full ring-1 ring-ink-soft/10 bg-ink/60 backdrop-blur-xl text-cream/80 hover:text-cream hover:bg-ink/75 shadow-soft transition-all duration-500 ease-soft hover:scale-105 active:scale-95 flex items-center justify-center"
       @click="scrollToTop"
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="size-4"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path d="m18 15-6-6-6 6" />
-      </svg>
+      <Icon name="heroicons:arrow-up" class="size-4" />
     </button>
   </Transition>
 </template>

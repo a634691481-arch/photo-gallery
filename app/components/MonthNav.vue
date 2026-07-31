@@ -1,15 +1,15 @@
 <template>
   <nav
     v-if="months.length"
-    class="hidden lg:flex fixed right-4 xl:right-6 top-1/2 -translate-y-1/2 z-40 flex-col gap-0.5 px-2 py-3 rounded-2xl bg-cream-dark/80 backdrop-blur-2xl border border-ink-soft/10"
+    class="hidden lg:flex fixed right-4 xl:right-6 top-1/2 -translate-y-1/2 z-[var(--z-float)] flex-col gap-0.5 px-2 py-3 rounded-2xl bg-cream-dark/80 backdrop-blur-2xl ring-1 ring-ink-soft/10"
   >
     <button
       v-for="m in months"
       :key="m"
-      class="relative px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-all duration-300 ease-out"
+      class="relative px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-all duration-500 ease-soft"
       :class="
         activeMonth === m
-          ? 'text-cream bg-accent font-medium shadow-sm'
+          ? 'text-cream bg-accent font-medium shadow-soft'
           : 'text-ink-muted hover:text-ink-soft hover:bg-ink-soft/10'
       "
       @click="onNavClick(m)"
@@ -18,17 +18,17 @@
     </button>
   </nav>
 
-  <nav v-if="months.length" class="lg:hidden fixed bottom-6 left-4 right-20 z-40">
+  <nav v-if="months.length" class="lg:hidden fixed bottom-6 left-4 right-20 z-[var(--z-float)]">
     <div
-      class="flex items-center gap-1 overflow-x-auto no-scrollbar px-2 py-2 rounded-full bg-cream-dark/85 backdrop-blur-2xl border border-ink-soft/10 shadow-lg"
+      class="flex items-center gap-1 overflow-x-auto no-scrollbar px-2 py-2 rounded-full bg-cream-dark/85 backdrop-blur-2xl ring-1 ring-ink-soft/10 shadow-soft-lg"
     >
       <button
         v-for="m in months"
         :key="m"
-        class="relative shrink-0 px-3.5 py-1.5 rounded-full text-xs whitespace-nowrap transition-all duration-300 ease-out"
+        class="relative shrink-0 px-3.5 py-1.5 rounded-full text-xs whitespace-nowrap transition-all duration-500 ease-soft"
         :class="
           activeMonth === m
-            ? 'text-cream bg-accent font-medium shadow-sm'
+            ? 'text-cream bg-accent font-medium shadow-soft'
             : 'text-ink-muted hover:text-ink-soft hover:bg-ink-soft/10'
         "
         @click="onNavClick(m)"

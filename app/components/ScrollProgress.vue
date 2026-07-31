@@ -1,7 +1,11 @@
 <template>
   <div
-    class="fixed top-0 left-0 z-[300] h-0.5 pointer-events-none transition-all duration-150"
-    :style="{ width: scrollProgress + '%', background: 'linear-gradient(90deg, #e6a87c, #c17c53)' }"
+    class="fixed top-0 left-0 z-[var(--z-progress)] h-0.5 pointer-events-none transition-all duration-150"
+    :style="{
+      width: scrollProgress + '%',
+      background:
+        'linear-gradient(90deg, rgb(var(--color-accent)), rgb(var(--color-accent-light)))',
+    }"
   />
 </template>
 
