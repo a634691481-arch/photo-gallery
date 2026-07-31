@@ -155,6 +155,7 @@ const startUpload = async () => {
 }
 
 const retryFile = (i: number) => {
+  if (uploading.value) return
   const f = files.value[i]
   if (!f) return
   f.status = 'pending'

@@ -102,8 +102,13 @@ async function doSearch() {
   if (!query.value.trim()) return
   searching.value = true
   results.value = []
-  const { data } = await $fetch('/api/search', { params: { q: query.value } })
-  results.value = (data as any)?.results ?? []
-  searching.value = false
+  try {
+    const res = await $fetch('/api/search', { params: { q: query.value } })
+    results.value = (res as any)?.results ?? []
+  } catch (e: any) {
+    console.error('search failed:', e)
+  } finally {
+    searching.value = false
+  }
 }
 </script>
