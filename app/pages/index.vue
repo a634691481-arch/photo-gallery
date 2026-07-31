@@ -149,12 +149,7 @@ const photoGroups = computed(() => {
 
 const formatDate = (d: string | null) =>
   d ? new Date(d).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }) : ''
-const onImgError = (e: Event) => {
-  const img = e.target as HTMLImageElement
-  img.style.background = '#25201b'
-  img.style.minHeight = '200px'
-  img.src = ''
-}
+const { onImgError } = useImgFallback()
 const toggleLike = (photo: any) => {
   photo.liked = !photo.liked
   photo.likeCount = photo.liked

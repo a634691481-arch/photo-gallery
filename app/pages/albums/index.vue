@@ -59,9 +59,5 @@
 definePageMeta({ middleware: 'auth' })
 const { data, pending } = useFetch('/api/albums')
 const albums = computed(() => data.value ?? [])
-const onImgError = (e: Event) => {
-  const img = e.target as HTMLImageElement
-  img.style.background = '#25201b'
-  img.src = ''
-}
+const { onImgError } = useImgFallback()
 </script>

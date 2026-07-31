@@ -65,10 +65,5 @@ const openPreview = (idx: number) => {
   previewIndex.value = idx
   previewVisible.value = true
 }
-const onImgError = (e: Event) => {
-  const img = e.target as HTMLImageElement
-  img.style.background = '#25201b'
-  img.style.minHeight = '200px'
-  img.src = ''
-}
+const { onImgError } = useImgFallback()
 </script>
