@@ -38,17 +38,7 @@
 
     <section class="px-4 sm:px-6 pb-24">
       <div class="max-w-7xl mx-auto">
-        <div
-          v-if="initialLoading"
-          class="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-3 sm:gap-4"
-        >
-          <div
-            v-for="n in 12"
-            :key="n"
-            class="animate-pulse rounded-2xl bg-ink-soft/10 mb-3 sm:mb-4"
-            :style="{ height: `${160 + (n % 4) * 70}px` }"
-          />
-        </div>
+        <PhotoSkeleton v-if="initialLoading" :count="12" />
         <EmptyState
           v-else-if="!loadingMore && photoGroups.length === 0"
           text="这个时间段还没有照片"
@@ -100,10 +90,14 @@
             </div>
           </div>
         </div>
-        <!-- <div ref="loadTrigger" class="flex justify-center py-12">
-          <div v-if="loadingMore" class="flex items-center gap-2 text-ink-muted"><Icon name="ph-spinner" class="size-5 animate-spin" />加载中...</div>
-          <p v-else-if="!hasMore && photoGroups.length > 0" class="text-ink-muted text-sm">已经到底了</p>
-        </div> -->
+        <div ref="loadTrigger" class="flex justify-center py-12">
+          <div v-if="loadingMore" class="flex items-center gap-2 text-ink-muted">
+            <Icon name="heroicons:arrow-path" class="size-5 animate-spin" />加载中...
+          </div>
+          <p v-else-if="!hasMore && photoGroups.length > 0" class="text-ink-muted text-sm">
+            已经到底了
+          </p>
+        </div>
       </div>
     </section>
 

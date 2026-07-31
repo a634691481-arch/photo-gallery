@@ -60,10 +60,7 @@
               v-for="s in suggestions"
               :key="s"
               class="px-3 py-1.5 text-xs rounded-full border border-ink-soft/20 text-ink-muted hover:text-ink hover:border-cream transition-colors"
-              @click="
-                query = s
-                doSearch()
-              "
+              @click="selectSuggestion(s)"
             >
               {{ s }}
             </button>
@@ -84,6 +81,11 @@ const suggestions = ['宝宝在海边', '生日蛋糕', '徒步照片', '家庭�
 const clearSearch = () => {
   query.value = ''
   results.value = []
+}
+
+const selectSuggestion = (s: string) => {
+  query.value = s
+  doSearch()
 }
 
 async function doSearch() {
