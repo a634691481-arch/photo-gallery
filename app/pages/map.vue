@@ -16,12 +16,7 @@
 
     <section class="px-4 sm:px-6 pb-24">
       <div class="max-w-6xl mx-auto">
-        <EmptyState
-          image="/illustrations/finding-way.svg"
-          alt="足迹地图"
-          text="地图将在连接数据后显示照片位置"
-          variant="card"
-        />
+        <EmptyState text="地图将在连接数据后显示照片位置" variant="card" />
 
         <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           <div
