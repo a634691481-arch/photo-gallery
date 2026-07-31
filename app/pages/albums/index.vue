@@ -27,6 +27,8 @@
               :src="album.coverUrl"
               :alt="album.title"
               class="w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-105"
+              loading="lazy"
+              @error="onImgError"
             />
             <div class="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/10 to-transparent" />
             <div class="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
@@ -42,7 +44,7 @@
           >
             <div class="text-center">
               <Icon
-                name="ph-plus-circle"
+                name="heroicons:plus-circle"
                 class="size-10 block mx-auto mb-2 text-ink-muted/40 group-hover:text-cream transition-colors"
               /><span class="text-sm text-ink-muted">新建相册</span>
             </div>
@@ -57,4 +59,9 @@
 definePageMeta({ middleware: 'auth' })
 const { data, pending } = useFetch('/api/albums')
 const albums = computed(() => data.value ?? [])
+const onImgError = (e: Event) => {
+  const img = e.target as HTMLImageElement
+  img.style.background = '#25201b'
+  img.src = ''
+}
 </script>

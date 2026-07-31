@@ -215,6 +215,7 @@ function refreshGSAP() {
 
 watch(selectedMonth, () => {
   fetchPhotos(true)
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 })
 
 onMounted(async () => {
@@ -228,6 +229,18 @@ onMounted(async () => {
     )
     observer.observe(loadTrigger.value)
   }
+  window.addEventListener('scroll', onScroll, { passive: true })
+})
+
+const onScroll = () => {
+  if (loadTrigger.value && hasMore.value && !loadingMore.value) {
+    const rect = loadTrigger.value.getBoundingClientRect()
+    if (rect.top < window.innerHeight + 300) fetchPhotos()
+  }
+}
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', onScroll)
 })
 </script>
 

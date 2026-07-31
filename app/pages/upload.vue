@@ -71,7 +71,14 @@
               <span v-else-if="file.status === 'done'" class="text-xs text-green-500">完成</span>
               <span v-else-if="file.status === 'error'" class="text-xs text-red-500">失败</span>
               <button
-                v-if="file.status === 'pending'"
+                v-if="file.status === 'error'"
+                class="px-2 py-1 text-xs rounded-full bg-ink-soft/20 text-ink hover:bg-ink-soft/40 transition-colors"
+                @click="retryFile(i)"
+              >
+                重试
+              </button>
+              <button
+                v-if="file.status === 'pending' || file.status === 'error'"
                 class="p-1 rounded-full hover:bg-cream-dark/40 dark:hover:bg-ink-soft/20 transition-colors"
                 @click="removeFile(i)"
               >
@@ -138,5 +145,20 @@ const handleFileSelect = (e: Event) => {
 
 const triggerInput = () => fileInput.value?.click()
 
-const startUpload = () => uploadAll(selectedAlbum.value || undefined)
+const toast = useToast()
+
+const startUpload = async () => {
+  const { ok, fail } = await uploadAll(selectedAlbum.value || undefined)
+  if (ok > 0 && fail === 0) toast.success(`上传成功 ${ok} 张照片`)
+  else if (ok > 0 && fail > 0) toast.error(`成功 ${ok} 张，失败 ${fail} 张，可重试`)
+  else if (fail > 0) toast.error(`全部失败（${fail} 张），可点击重试`)
+}
+
+const retryFile = (i: number) => {
+  const f = files.value[i]
+  if (!f) return
+  f.status = 'pending'
+  f.progress = 0
+  startUpload()
+}
 </script>

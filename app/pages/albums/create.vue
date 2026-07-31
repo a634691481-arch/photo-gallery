@@ -48,12 +48,12 @@ const handleCreate = async () => {
   if (!title.value.trim()) return
   submitting.value = true
   try {
-    await $fetch('/api/albums', {
+    const res = await $fetch('/api/albums', {
       method: 'POST',
       body: { title: title.value, description: description.value },
     })
     toast?.success('相册创建成功')
-    await navigateTo('/albums')
+    await navigateTo(`/albums/${(res as any).id}`)
   } catch (e: any) {
     toast?.error(e?.message || '创建失败')
   } finally {

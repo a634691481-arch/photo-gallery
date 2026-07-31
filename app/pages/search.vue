@@ -27,7 +27,8 @@
     </section>
     <section class="px-4 sm:px-6 pb-24">
       <div class="max-w-7xl mx-auto">
-        <div v-if="results.length" class="columns-2 sm:columns-3 lg:columns-4 gap-3 mt-8">
+        <PhotoSkeleton v-if="searching" :count="12" class="mt-8" />
+        <div v-else-if="results.length" class="columns-2 sm:columns-3 lg:columns-4 gap-3 mt-8">
           <div
             v-for="photo in results"
             :key="photo.id"
@@ -40,14 +41,14 @@
             />
           </div>
         </div>
-        <div v-else-if="query && !searching" class="text-center py-16">
+        <div v-else-if="query" class="text-center py-16">
           <img
             src="/illustrations/undraw_exploring_d1vd.svg"
             class="w-48 mx-auto mb-4 opacity-70"
           />
           <p class="text-ink-muted text-sm">未找到相关照片</p>
         </div>
-        <div v-else-if="!query" class="text-center py-16">
+        <div v-else class="text-center py-16">
           <img
             src="/illustrations/undraw_exploring_d1vd.svg"
             class="w-48 mx-auto mb-4 opacity-70"
@@ -73,10 +74,19 @@
 
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
+const route = useRoute()
 const query = ref('')
 const searching = ref(false)
 const results = ref<any[]>([])
 const suggestions = ['宝宝在海边', '生日蛋糕', '徒步照片', '家庭聚餐', '下雪天']
+
+onMounted(() => {
+  const q = route.query.q
+  if (typeof q === 'string' && q.trim()) {
+    query.value = q
+    doSearch()
+  }
+})
 
 const clearSearch = () => {
   query.value = ''
@@ -91,8 +101,9 @@ const selectSuggestion = (s: string) => {
 async function doSearch() {
   if (!query.value.trim()) return
   searching.value = true
-  const { data } = await useFetch('/api/search', { params: { q: query.value }, server: false })
-  results.value = data.value?.results ?? []
+  results.value = []
+  const { data } = await $fetch('/api/search', { params: { q: query.value } })
+  results.value = (data as any)?.results ?? []
   searching.value = false
 }
 </script>

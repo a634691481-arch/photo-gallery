@@ -39,11 +39,6 @@
       >
         <span class="text-cream/60 text-xs">{{ index + 1 }} / {{ photos.length }}</span>
         <div class="w-px h-4 bg-cream/20" />
-        <button
-          class="text-cream/70 hover:text-red-400 transition-colors text-xs flex items-center gap-1"
-        >
-          <Icon name="heroicons:heart" class="size-4" />收藏
-        </button>
         <a
           v-if="currentPhoto?.webpUrl || currentPhoto?.url"
           :href="currentPhoto.webpUrl || currentPhoto.url"

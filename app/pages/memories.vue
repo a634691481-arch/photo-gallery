@@ -16,6 +16,7 @@
     <section class="px-4 sm:px-6 pb-24">
       <div class="max-w-2xl mx-auto">
         <div v-if="pending" class="text-center py-16 text-ink-muted text-sm">加载中...</div>
+        <EmptyState v-else-if="!anniversaries.length" text="还没有纪念日" />
         <div v-else class="space-y-3">
           <div
             v-for="item in anniversaries"

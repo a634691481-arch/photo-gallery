@@ -65,13 +65,14 @@
               :key="loc.name"
               class="map-card"
               :class="[
-                'group relative rounded-2xl p-5 sm:p-6 transition-all duration-600 ease-out overflow-hidden cursor-default',
+                'group relative rounded-2xl p-5 sm:p-6 transition-all duration-600 ease-out overflow-hidden cursor-pointer',
                 loc.count >= 60
                   ? 'col-span-2 row-span-1 bg-ink-soft/[0.08] hover:bg-ink-soft/[0.14]'
                   : loc.count >= 30
                     ? 'bg-ink-soft/[0.05] hover:bg-ink-soft/[0.10]'
                     : 'bg-ink-soft/[0.03] hover:bg-ink-soft/[0.07]',
               ]"
+              @click="navigateTo(`/search?q=${encodeURIComponent(loc.name)}`)"
             >
               <div
                 class="absolute top-0 right-0 w-40 h-40 rounded-full opacity-[0.03] pointer-events-none"

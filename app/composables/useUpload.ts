@@ -33,7 +33,9 @@ export function useUpload() {
 
   const uploadAll = async (albumId?: string) => {
     uploading.value = true
-    const pendingFiles = files.value.filter(f => f.status === 'pending')
+    let ok = 0
+    let fail = 0
+    const pendingFiles = files.value.filter((f) => f.status === 'pending' || f.status === 'error')
 
     for (const f of pendingFiles) {
       f.status = 'uploading'
@@ -42,7 +44,6 @@ export function useUpload() {
         formData.append('file', f.file)
         if (albumId) formData.append('albumId', albumId)
 
-        // Upload with progress
         const xhr = new XMLHttpRequest()
         await new Promise<void>((resolve, reject) => {
           xhr.upload.addEventListener('progress', (e) => {
@@ -61,17 +62,23 @@ export function useUpload() {
 
         f.status = 'done'
         f.progress = 100
+        ok++
       } catch (err: any) {
         f.status = 'error'
         f.error = err.message
+        f.progress = 0
+        fail++
       }
     }
 
     uploading.value = false
+    return { ok, fail }
   }
 
   const clear = () => {
-    files.value.forEach(f => { if (f.preview) URL.revokeObjectURL(f.preview) })
+    files.value.forEach((f) => {
+      if (f.preview) URL.revokeObjectURL(f.preview)
+    })
     files.value = []
   }
 
