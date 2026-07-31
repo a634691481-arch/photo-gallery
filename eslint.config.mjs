@@ -12,15 +12,13 @@ export default [
     rules: {
       'vue/multi-word-component-names': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
     },
   },
   {
-    ignores: [
-      '**/.nuxt/**',
-      '**/.output/**',
-      '**/dist/**',
-      '**/node_modules/**',
-    ],
+    ignores: ['**/.nuxt/**', '**/.output/**', '**/dist/**', '**/node_modules/**', '**/scripts/**'],
   },
 ]

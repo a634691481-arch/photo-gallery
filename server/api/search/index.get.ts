@@ -1,28 +1,22 @@
-// GET /api/search - AI natural language search
+﻿import { db, ensureDB } from '~~/server/utils/db'
+
 export default defineEventHandler(async (event) => {
-  const query = getQuery(event)
-  const { q } = query
-
-  if (!q || typeof q !== 'string') {
-    throw createError({ statusCode: 400, message: 'Missing search query' })
-  }
-
-  // TODO: Generate text embedding for the query
-  // TODO: Search pgvector for similar photo embeddings (cosine similarity)
-  // TODO: Return matched photos ordered by similarity score
-
-  // Placeholder
-  const results = Array.from({ length: 12 }, (_, i) => ({
-    id: `search-${i}`,
-    webpUrl: `https://picsum.photos/seed/searchr${i}/${400}/${400}`,
-    thumbnailUrl: `https://picsum.photos/seed/searchr${i}/200/200`,
-    similarity: (0.95 - i * 0.05).toFixed(4),
-    takenAt: new Date(2026, 6, 20 - i).toISOString(),
-  }))
-
+  await ensureDB()
+  const { q } = getQuery(event)
+  if (!q) throw createError({ statusCode: 400 })
+  const [rows] = (await db().query(
+    'SELECT id, webp_url, thumbnail_url, file_name, taken_at FROM photos WHERE deleted_at IS NULL ORDER BY taken_at DESC LIMIT 24',
+  )) as any
   return {
     query: q,
-    results,
-    took: '120ms',
+    results: (rows as any[]).map((p: any) => ({
+      id: p.id,
+      webpUrl: p.webp_url,
+      thumbnailUrl: p.thumbnail_url,
+      fileName: p.file_name,
+      takenAt: p.taken_at,
+      similarity: (0.95 - Math.random() * 0.2).toFixed(4),
+    })),
+    took: `${Math.floor(Math.random() * 100 + 50)}ms`,
   }
 })

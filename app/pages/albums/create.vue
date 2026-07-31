@@ -25,9 +25,10 @@
           </div>
           <button
             type="submit"
-            class="px-8 py-3 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink font-display font-medium text-sm transition-all duration-300 hover:scale-105"
+            :disabled="submitting"
+            class="px-8 py-3 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink font-display font-medium text-sm transition-all duration-300 hover:scale-105 disabled:opacity-50"
           >
-            创建相册
+            {{ submitting ? '创建中...' : '创建相册' }}
           </button>
         </form>
       </div>
@@ -40,7 +41,23 @@ definePageMeta({ middleware: 'auth' })
 
 const title = ref('')
 const description = ref('')
+const submitting = ref(false)
+const toast = useToast()
+
 const handleCreate = async () => {
-  await navigateTo('/albums')
+  if (!title.value.trim()) return
+  submitting.value = true
+  try {
+    await $fetch('/api/albums', {
+      method: 'POST',
+      body: { title: title.value, description: description.value },
+    })
+    toast?.success('相册创建成功')
+    await navigateTo('/albums')
+  } catch (e: any) {
+    toast?.error(e?.message || '创建失败')
+  } finally {
+    submitting.value = false
+  }
 }
 </script>

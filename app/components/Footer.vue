@@ -60,7 +60,6 @@ const linkGroups = [
     links: [
       { label: '时间线', to: '/' },
       { label: '相册', to: '/albums' },
-      { label: '人物', to: '/people' },
     ],
   },
   {

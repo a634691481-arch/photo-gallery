@@ -2,7 +2,7 @@
   <Teleport to="body">
     <div
       v-if="visible"
-      class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-ink/80 backdrop-blur-sm"
+      class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-ink/80 backdrop-blur-md"
       @click.self="$emit('close')"
       @wheel.prevent="onWheel"
       @touchstart="onTouchStart"

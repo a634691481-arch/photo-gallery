@@ -85,18 +85,11 @@
           <label class="block text-sm font-medium mb-2">添加到相册</label>
           <select
             v-model="selectedAlbum"
-            class="w-full px-4 py-3 rounded-xl border border-ink-soft/20 bg-cream dark:bg-ink-soft/20 text-ink dark:text-cream focus:outline-none focus:border-accent text-sm transition-colors cursor-pointer appearance-none"
-            style="color-scheme: light"
+            class="w-full px-4 py-3 rounded-xl border border-ink-soft/20 bg-ink-soft/20 text-ink focus:outline-none focus:border-accent text-sm transition-colors cursor-pointer appearance-none"
+            style="color-scheme: dark"
           >
-            <option class="bg-cream dark:bg-ink text-ink dark:text-cream" value="">
-              不加入相册
-            </option>
-            <option
-              v-for="a in albums"
-              :key="a.id"
-              :value="a.id"
-              class="bg-cream dark:bg-ink text-ink dark:text-cream"
-            >
+            <option value="" class="bg-surface text-ink-muted">不加入相册</option>
+            <option v-for="a in albums" :key="a.id" :value="a.id" class="bg-surface text-ink">
               {{ a.title }}
             </option>
           </select>
@@ -119,41 +112,18 @@
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
 
-const files = ref<UploadFile[]>([])
+const { files, uploading, addFiles, removeFile, uploadAll } = useUpload()
 const isDragging = ref(false)
-const uploading = ref(false)
 const selectedAlbum = ref('')
 const dropZone = ref<HTMLElement>()
 const fileInput = ref<HTMLInputElement>()
 
-const albums = [
-  { id: '1', title: '2026 暑假旅行' },
-  { id: '2', title: '宝宝第一步' },
-]
-
-interface UploadFile {
-  name: string
-  size: number
-  preview: string | null
-  status: 'pending' | 'uploading' | 'done' | 'error'
-  progress: number
-}
+const { data: albumData } = useFetch('/api/albums')
+const albums = computed(() => (albumData.value as any[]) ?? [])
 
 const formatSize = (bytes: number) => {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-}
-
-const addFiles = (fileList: FileList) => {
-  for (const f of Array.from(fileList)) {
-    files.value.push({
-      name: f.name,
-      size: f.size,
-      preview: f.type.startsWith('image/') ? URL.createObjectURL(f) : null,
-      status: 'pending',
-      progress: 0,
-    })
-  }
 }
 
 const handleDrop = (e: DragEvent) => {
@@ -168,24 +138,5 @@ const handleFileSelect = (e: Event) => {
 
 const triggerInput = () => fileInput.value?.click()
 
-const removeFile = (i: number) => {
-  const f = files.value[i]
-  if (f.preview) URL.revokeObjectURL(f.preview)
-  files.value.splice(i, 1)
-}
-
-const startUpload = async () => {
-  uploading.value = true
-  for (const f of files.value) {
-    if (f.status === 'done') continue
-    f.status = 'uploading'
-    for (let p = 0; p <= 100; p += 20) {
-      await new Promise((r) => setTimeout(r, 200))
-      f.progress = p
-    }
-    f.status = 'done'
-    f.progress = 100
-  }
-  uploading.value = false
-}
+const startUpload = () => uploadAll(selectedAlbum.value || undefined)
 </script>

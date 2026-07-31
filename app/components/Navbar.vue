@@ -1,12 +1,12 @@
 <template>
   <nav
-    class="fixed top-5 sm:top-6 left-1/2 -translate-x-1/2 z-50 px-2 py-2 rounded-full border border-ink-soft/20 bg-ink/60 backdrop-blur-xl shadow-sm"
+    class="fixed top-5 sm:top-6 left-1/2 -translate-x-1/2 z-50 px-1.5 sm:px-2 py-1.5 sm:py-2 rounded-full border border-ink-soft/20 bg-ink/60 backdrop-blur-xl shadow-sm"
   >
-    <div class="flex items-center gap-1">
+    <div class="flex items-center gap-0.5 sm:gap-1 flex-nowrap">
       <NuxtLink
         to="/"
         active-class=""
-        class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full transition-colors hover:bg-ink-soft/10"
+        class="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-full transition-colors hover:bg-ink-soft/10 whitespace-nowrap"
         @click="mobileOpen = false"
       >
         <span class="font-display text-sm sm:text-base font-semibold tracking-tight text-ink">
@@ -29,19 +29,22 @@
       <div class="flex items-center gap-1 ml-2 sm:ml-4">
         <NuxtLink
           to="/upload"
-          class="px-4 py-2 rounded-full bg-ink text-cream text-xs sm:text-sm font-medium transition-all duration-500 hover:scale-105 active:scale-95"
+          class="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-ink text-cream text-xs sm:text-sm font-medium transition-all duration-500 hover:scale-105 active:scale-95 whitespace-nowrap"
           @click="mobileOpen = false"
         >
           上传照片
         </NuxtLink>
 
         <button
-          class="md:hidden p-2.5 rounded-full transition-colors hover:bg-ink-soft/10"
+          class="md:hidden p-2 sm:p-2.5 rounded-full transition-colors hover:bg-ink-soft/10"
           aria-label="菜单"
           :aria-expanded="mobileOpen"
           @click="mobileOpen = !mobileOpen"
         >
-          <Icon :name="mobileOpen ? 'ph-x' : 'heroicons:bars-3'" class="size-4 text-ink-soft" />
+          <Icon
+            :name="mobileOpen ? 'heroicons:x-mark' : 'heroicons:bars-3-bottom-right'"
+            class="size-4 text-ink-soft"
+          />
         </button>
       </div>
     </div>
@@ -83,7 +86,7 @@ const mobileOpen = ref(false)
 const links = [
   { to: '/', label: '时间线' },
   { to: '/albums', label: '相册' },
-  { to: '/people', label: '人物' },
+
   { to: '/map', label: '足迹' },
   { to: '/search', label: '搜索' },
 ]

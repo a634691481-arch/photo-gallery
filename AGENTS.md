@@ -1,6 +1,6 @@
 # photo-gallery
 
-Private family photo gallery. Nuxt 4 + Prisma (MySQL) + Ali OSS + Supabase.
+Private family photo gallery. Nuxt 4 + Ali OSS + Supabase.
 
 ## Commands
 
@@ -11,9 +11,7 @@ pnpm lint         # eslint
 pnpm lint:fix     # eslint --fix
 pnpm format       # prettier write
 pnpm format:check # prettier check
-pnpm db:generate  # prisma generate
-pnpm db:push      # prisma db push
-pnpm db:migrate   # prisma migrate dev
+
 ```
 
 ## Stack
@@ -21,7 +19,6 @@ pnpm db:migrate   # prisma migrate dev
 - **Nuxt 4.5.1** with `app/` directory structure (not root-level pages/server)
 - **Node 22** (see `.nvmrc`)
 - **pnpm** (lockfile: `pnpm-lock.yaml`)
-- **Prisma** with MySQL (`prisma/schema.prisma`)
 - **Tailwind CSS** via `@nuxtjs/tailwindcss` — config at `tailwind.config.ts`
 - **@nuxt/icon** with iconify provider, mode: css
 - **GSAP** for scroll/entrance animations
@@ -57,12 +54,11 @@ server/
   api/          # API routes (albums/, auth/, faces/, photos/, search/, upload/)
   middleware/   # server middleware
   utils/        # server utilities
-prisma/         # schema.prisma (MySQL)
+
 ```
 
 ## Gotchas
 
-- After editing `prisma/schema.prisma`, run `pnpm db:generate` then `pnpm db:push`
 - Ali OSS credentials via env vars (see `.env.example`)
 - GSAP plugin is client-only (`plugins/gsap.client.ts`)
 - Nuxt 4 compat date: `2026-07-30`
