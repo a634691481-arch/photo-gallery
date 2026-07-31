@@ -11,6 +11,8 @@
     <Navbar />
     <slot />
     <Footer />
+    <BackToTop />
+    <Toast />
   </main>
 </template>
 
