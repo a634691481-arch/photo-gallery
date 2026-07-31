@@ -1,19 +1,19 @@
 <template>
   <div>
-    <section class="pt-24 sm:pt-32 pb-8 px-6">
-      <div class="max-w-6xl mx-auto">
-        <div class="flex items-center gap-4 mb-8">
-          <button
-            class="p-2 rounded-full hover:bg-cream-dark/30 dark:hover:bg-ink-soft/10 transition-colors"
-            @click="navigateTo('/people')"
-          >
-            <Icon name="heroicons:arrow-left" class="size-5" />
-          </button>
-          <div>
-            <h1 class="font-display text-2xl sm:text-3xl font-semibold">{{ person.name }}</h1>
-            <p class="text-ink-muted text-sm mt-1">{{ photos.length }} 张照片</p>
-          </div>
+    <section class="pt-24 sm:pt-32 md:pt-40 pb-8 px-6">
+      <div class="max-w-6xl mx-auto text-center">
+        <div
+          class="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto rounded-full overflow-hidden ring-2 ring-cream-dark/30 dark:ring-ink-soft/10 mb-6"
+        >
+          <img :src="person.avatar" class="w-full h-full object-cover" />
         </div>
+        <h1
+          class="font-display font-semibold leading-[1.05] tracking-tight text-ink [text-wrap:balance]"
+          style="font-size: clamp(2.5rem, 5vw, 4.5rem)"
+        >
+          {{ person.name }}
+        </h1>
+        <p class="mt-3 text-ink-muted text-base max-w-lg mx-auto">{{ photos.length }} 张照片</p>
       </div>
     </section>
 
@@ -50,7 +50,13 @@
 definePageMeta({ middleware: 'auth' })
 
 const route = useRoute()
-const person = ref({ name: '宝宝 Emma' })
+const people: Record<string, { name: string; avatar: string }> = {
+  '1': { name: '宝宝 Emma', avatar: 'https://picsum.photos/seed/face1/200/200' },
+  '2': { name: '妈妈', avatar: 'https://picsum.photos/seed/face2/200/200' },
+  '3': { name: '爸爸', avatar: 'https://picsum.photos/seed/face3/200/200' },
+  '4': { name: '奶奶', avatar: 'https://picsum.photos/seed/face4/200/200' },
+}
+const person = computed(() => people[route.params.id as string] || people['1'])
 const previewVisible = ref(false)
 const previewIndex = ref(0)
 
