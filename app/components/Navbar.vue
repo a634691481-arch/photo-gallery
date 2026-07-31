@@ -7,6 +7,7 @@
         to="/"
         active-class=""
         class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full transition-colors hover:bg-ink-soft/10"
+        @click="mobileOpen = false"
       >
         <span class="font-display text-sm sm:text-base font-semibold tracking-tight text-ink">
           家庭相册
@@ -29,6 +30,7 @@
         <NuxtLink
           to="/upload"
           class="px-4 py-2 rounded-full bg-ink text-cream text-xs sm:text-sm font-medium transition-all duration-500 hover:scale-105 active:scale-95"
+          @click="mobileOpen = false"
         >
           上传照片
         </NuxtLink>
@@ -43,22 +45,36 @@
         </button>
       </div>
     </div>
+  </nav>
 
-    <div
-      v-if="mobileOpen"
-      class="md:hidden mt-3 pt-3 border-t border-ink-soft/10 flex flex-col gap-1"
+  <Teleport to="body">
+    <Transition
+      enter-active-class="transition-opacity duration-300"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition-opacity duration-300"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
     >
-      <NuxtLink
-        v-for="link in links"
-        :key="link.to"
-        :to="link.to"
-        class="px-3 py-2 text-sm rounded-full transition-colors text-ink-muted hover:text-ink hover:bg-ink-soft/10"
+      <div
+        v-if="mobileOpen"
+        class="md:hidden fixed inset-0 z-40 bg-ink/95 backdrop-blur-xl"
         @click="mobileOpen = false"
       >
-        {{ link.label }}
-      </NuxtLink>
-    </div>
-  </nav>
+        <div class="pt-28 px-6 flex flex-col gap-2" @click.stop>
+          <NuxtLink
+            v-for="link in links"
+            :key="link.to"
+            :to="link.to"
+            class="px-5 py-4 text-base rounded-2xl text-ink-muted hover:text-ink hover:bg-ink-soft/10 transition-colors"
+            @click="mobileOpen = false"
+          >
+            {{ link.label }}
+          </NuxtLink>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
