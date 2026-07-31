@@ -85,10 +85,20 @@
           <label class="block text-sm font-medium mb-2">添加到相册</label>
           <select
             v-model="selectedAlbum"
-            class="w-full px-4 py-3 rounded-xl border border-ink-soft/20 bg-transparent text-ink focus:outline-none focus:border-accent text-sm transition-colors cursor-pointer"
+            class="w-full px-4 py-3 rounded-xl border border-ink-soft/20 bg-cream dark:bg-ink-soft/20 text-ink dark:text-cream focus:outline-none focus:border-accent text-sm transition-colors cursor-pointer appearance-none"
+            style="color-scheme: light"
           >
-            <option value="">不加入相册</option>
-            <option v-for="a in albums" :key="a.id" :value="a.id">{{ a.title }}</option>
+            <option class="bg-cream dark:bg-ink text-ink dark:text-cream" value="">
+              不加入相册
+            </option>
+            <option
+              v-for="a in albums"
+              :key="a.id"
+              :value="a.id"
+              class="bg-cream dark:bg-ink text-ink dark:text-cream"
+            >
+              {{ a.title }}
+            </option>
           </select>
         </div>
 

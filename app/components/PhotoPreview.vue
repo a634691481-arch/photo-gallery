@@ -2,9 +2,9 @@
   <Teleport to="body">
     <div
       v-if="visible"
-      class="fixed inset-0 z-[100] flex flex-col items-center justify-center"
+      class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-ink/80 backdrop-blur-sm"
       @click.self="$emit('close')"
-      @wheel="onWheel"
+      @wheel.prevent="onWheel"
       @touchstart="onTouchStart"
       @touchmove.prevent
       @touchend="onTouchEnd"
@@ -13,19 +13,19 @@
         class="absolute top-4 right-4 z-10 p-3 rounded-full bg-cream/10 hover:bg-cream/20 transition-colors text-cream/80"
         @click="$emit('close')"
       >
-        <Icon name="ph-x" class="size-6" />
+        <Icon name="heroicons:x-mark" class="size-6" />
       </button>
       <button
         class="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-cream/10 hover:bg-cream/20 transition-colors text-cream/80"
         @click.stop="prev"
       >
-        <Icon name="ph-caret-left" class="size-6" />
+        <Icon name="heroicons:chevron-left" class="size-6" />
       </button>
       <button
         class="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-cream/10 hover:bg-cream/20 transition-colors text-cream/80"
         @click.stop="next"
       >
-        <Icon name="ph-caret-right" class="size-6" />
+        <Icon name="heroicons:chevron-right" class="size-6" />
       </button>
 
       <img
@@ -35,21 +35,21 @@
       />
 
       <div
-        class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-cream/10 backdrop-blur-xl rounded-full px-5 py-2.5"
+        class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-ink/70 backdrop-blur-xl rounded-full px-5 py-2.5 border border-cream/10"
       >
         <span class="text-cream/60 text-xs">{{ index + 1 }} / {{ photos.length }}</span>
         <div class="w-px h-4 bg-cream/20" />
         <button
           class="text-cream/70 hover:text-red-400 transition-colors text-xs flex items-center gap-1"
         >
-          <Icon name="ph-heart" class="size-4" />收藏
+          <Icon name="heroicons:heart" class="size-4" />收藏
         </button>
         <a
           v-if="currentPhoto?.webpUrl || currentPhoto?.url"
           :href="currentPhoto.webpUrl || currentPhoto.url"
           download
           class="text-cream/70 hover:text-cream transition-colors text-xs flex items-center gap-1"
-          ><Icon name="ph-download-simple" class="size-4" />下载</a
+          ><Icon name="heroicons:arrow-down-tray" class="size-4" />下载</a
         >
         <div class="w-px h-4 bg-cream/20" />
         <button
@@ -57,7 +57,10 @@
           :class="{ 'text-green-400': autoplay }"
           @click="toggleAutoplay"
         >
-          <Icon :name="autoplay ? 'ph-pause-circle' : 'ph-play-circle'" class="size-4" />
+          <Icon
+            :name="autoplay ? 'heroicons:pause-circle' : 'heroicons:play-circle'"
+            class="size-4"
+          />
           <span class="text-xs">{{ autoplay ? '播放中' : '自动' }}</span>
         </button>
       </div>

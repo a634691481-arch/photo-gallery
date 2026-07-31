@@ -68,7 +68,7 @@
                 <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
                   <div class="flex items-center gap-2">
                     <span v-if="photo.isVideo" class="text-cream/80 text-xs flex items-center gap-1"
-                      ><Icon name="ph-play-circle-fill" class="size-3"
+                      ><Icon name="heroicons:play-circle-solid" class="size-3"
                     /></span>
                     <span class="text-cream/60 text-xs">{{ formatDate(photo.takenAt) }}</span>
                   </div>
@@ -80,7 +80,7 @@
 
         <div ref="loadTrigger" class="flex justify-center py-12">
           <div v-if="loading" class="flex items-center gap-2 text-ink-muted">
-            <Icon name="ph-spinner" class="size-5 animate-spin" />加载中...
+            <Icon name="heroicons:arrow-path" class="size-5 animate-spin" />加载中...
           </div>
         </div>
       </div>
