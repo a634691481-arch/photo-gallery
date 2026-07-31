@@ -16,6 +16,19 @@
     <section class="px-4 sm:px-6 pb-24">
       <div class="max-w-6xl mx-auto">
         <div v-if="pending" class="text-center py-16 text-ink-muted text-sm">加载中...</div>
+        <EmptyState
+          v-else-if="!albums.length"
+          image="/illustrations/the-void.svg"
+          alt="暂无相册"
+          text="还没有相册，上传照片时可以为它们创建相册"
+        >
+          <NuxtLink
+            to="/upload"
+            class="inline-flex items-center gap-1.5 mt-4 px-5 py-2.5 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink text-sm font-medium transition-all duration-300 hover:scale-105"
+          >
+            <Icon name="heroicons:cloud-arrow-up" class="size-4" />去上传
+          </NuxtLink>
+        </EmptyState>
         <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <div
             v-for="album in albums"
@@ -30,25 +43,20 @@
               loading="lazy"
               @error="onImgError"
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/10 to-transparent" />
-            <div class="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-              <h3 class="font-display text-lg sm:text-xl font-medium text-ink">
+            <div class="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/20 to-transparent" />
+            <div
+              class="absolute bottom-0 left-0 right-0 px-3.5 py-2.5 bg-ink/60 dark:bg-cream/60 backdrop-blur-md border-t border-cream/10 dark:border-ink/20"
+            >
+              <h3
+                class="font-display text-lg sm:text-xl font-medium text-cream dark:text-ink truncate"
+              >
                 {{ album.title }}
               </h3>
-              <p class="text-cream/50 text-sm mt-1">{{ album.photoCount }} 张照片</p>
+              <p class="text-cream/70 dark:text-ink/70 text-sm mt-0.5">
+                {{ album.photoCount }} 张照片
+              </p>
             </div>
           </div>
-          <NuxtLink
-            to="/albums/create"
-            class="flex items-center justify-center aspect-[4/3] rounded-2xl border-2 border-dashed border-ink-soft/20 hover:border-cream transition-colors group"
-          >
-            <div class="text-center">
-              <Icon
-                name="heroicons:plus-circle"
-                class="size-10 block mx-auto mb-2 text-ink-muted/40 group-hover:text-cream transition-colors"
-              /><span class="text-sm text-ink-muted">新建相册</span>
-            </div>
-          </NuxtLink>
         </div>
       </div>
     </section>

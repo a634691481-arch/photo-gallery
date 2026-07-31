@@ -1,30 +1,34 @@
 import type { Config } from 'tailwindcss'
 
 export default {
-  content: [
-    './app/**/*.{vue,js,ts,jsx,tsx}',
-  ],
+  content: ['./app/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
     extend: {
       fontFamily: {
         display: ['Georgia', 'Noto Serif SC', 'STSong', 'SimSun', 'serif'],
-        body: ['PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Microsoft JhengHei', 'sans-serif'],
+        body: [
+          'PingFang SC',
+          'Hiragino Sans GB',
+          'Microsoft YaHei',
+          'Microsoft JhengHei',
+          'sans-serif',
+        ],
       },
       colors: {
         cream: {
-          DEFAULT: 'var(--color-cream)',
-          dark: 'var(--color-cream-dark)',
+          DEFAULT: 'rgb(var(--color-cream) / <alpha-value>)',
+          dark: 'rgb(var(--color-cream-dark) / <alpha-value>)',
         },
         ink: {
-          DEFAULT: 'var(--color-ink)',
-          soft: 'var(--color-ink-soft)',
-          muted: 'var(--color-ink-muted)',
+          DEFAULT: 'rgb(var(--color-ink) / <alpha-value>)',
+          soft: 'rgb(var(--color-ink-soft) / <alpha-value>)',
+          muted: 'rgb(var(--color-ink-muted) / <alpha-value>)',
         },
         accent: {
-          DEFAULT: 'var(--color-accent)',
-          light: 'var(--color-accent-light)',
+          DEFAULT: 'rgb(var(--color-accent) / <alpha-value>)',
+          light: 'rgb(var(--color-accent-light) / <alpha-value>)',
         },
-        surface: 'var(--color-surface)',
+        surface: 'rgb(var(--color-surface) / <alpha-value>)',
       },
       animation: {
         marquee: 'marquee 40s linear infinite',

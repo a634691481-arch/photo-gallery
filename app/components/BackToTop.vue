@@ -32,13 +32,16 @@
 
 <script setup lang="ts">
 const visible = ref(false)
+const suppressAutoCenter = useState('nav:suppressAutoCenter', () => false)
 
 const onScroll = () => {
   visible.value = window.scrollY > 400
 }
 
 const scrollToTop = () => {
+  suppressAutoCenter.value = true
   window.scrollTo({ top: 0, behavior: 'smooth' })
+  setTimeout(() => (suppressAutoCenter.value = false), 1200)
 }
 
 onMounted(() => {

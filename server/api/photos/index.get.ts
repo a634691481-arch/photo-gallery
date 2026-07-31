@@ -1,4 +1,5 @@
 ﻿import { db, ensureDB } from '~~/server/utils/db'
+import { withPhotoUrls } from '~~/server/utils/photo'
 
 export default defineEventHandler(async (event) => {
   await ensureDB()
@@ -7,9 +8,14 @@ export default defineEventHandler(async (event) => {
   const limit = Math.min(parseInt((query.limit as string) || '30'), 100)
   const year = query.year as string | undefined
   const month = query.month as string | undefined
+  const favorites = query.favorites === '1'
 
   let where = 'WHERE deleted_at IS NULL'
   const params: any[] = []
+
+  if (favorites) {
+    where += ' AND p.id IN (SELECT photo_id FROM likes)'
+  }
 
   if (year) {
     if (month) {
@@ -22,7 +28,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const [[{ total }]] = (await db().query(
-    `SELECT COUNT(*) as total FROM photos ${where}`,
+    `SELECT COUNT(*) as total FROM photos p ${where}`,
     params,
   )) as any
   const [rows] = (await db().query(
@@ -30,26 +36,30 @@ export default defineEventHandler(async (event) => {
     [...params, limit, cursor],
   )) as any
 
-  const data = (rows as any[]).map((r: any) => ({
-    id: r.id,
-    webpUrl: r.webp_url,
-    thumbnailUrl: r.thumbnail_url,
-    originalUrl: r.original_url,
-    fileName: r.file_name,
-    takenAt: r.taken_at,
-    isVideo: !!r.is_video,
-    videoUrl: r.video_url,
-    latitude: r.latitude,
-    longitude: r.longitude,
-    locationName: r.location_name,
-    cameraMake: r.camera_make,
-    cameraModel: r.camera_model,
-    width: r.width,
-    height: r.height,
-    fileSize: r.file_size,
-    likeCount: r.like_count,
-    commentCount: r.comment_count,
-  }))
+  const data = (rows as any[]).map((r: any) => {
+    const p = withPhotoUrls(r)
+    return {
+      id: p.id,
+      webpUrl: p.webpUrl,
+      thumbnailUrl: p.thumbnailUrl,
+      originalUrl: p.originalUrl,
+      fileName: p.fileName,
+      takenAt: p.takenAt,
+      isVideo: p.isVideo,
+      videoUrl: p.videoUrl,
+      latitude: p.latitude,
+      longitude: p.longitude,
+      locationName: p.locationName,
+      cameraMake: p.cameraMake,
+      cameraModel: p.cameraModel,
+      width: p.width,
+      height: p.height,
+      fileSize: p.fileSize,
+      likeCount: p.likeCount,
+      commentCount: p.commentCount,
+      liked: (p.likeCount ?? 0) > 0,
+    }
+  })
 
   return { data, total, nextCursor: cursor + limit < total ? cursor + limit : null }
 })

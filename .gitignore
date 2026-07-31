@@ -4,3 +4,4 @@ node_modules/
 .codegraph/
 .impeccable/
 .env
+public/uploads/  

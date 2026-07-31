@@ -2,7 +2,7 @@
   <Teleport to="body">
     <div
       v-if="visible"
-      class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-ink/80 backdrop-blur-md"
+      class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-surface/20 backdrop-blur-md"
       @click.self="$emit('close')"
       @wheel.prevent="onWheel"
       @touchstart="onTouchStart"
@@ -10,19 +10,19 @@
       @touchend="onTouchEnd"
     >
       <button
-        class="absolute top-4 right-4 z-10 p-3 rounded-full bg-cream/10 hover:bg-cream/20 transition-colors text-cream/80"
+        class="absolute top-4 right-4 z-10 size-12 flex items-center justify-center rounded-full bg-[#B3AFA9] hover:bg-[#B3AFA9]/80 transition-colors text-cream"
         @click="$emit('close')"
       >
         <Icon name="heroicons:x-mark" class="size-6" />
       </button>
       <button
-        class="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-cream/10 hover:bg-cream/20 transition-colors text-cream/80"
+        class="absolute left-4 top-1/2 -translate-y-1/2 z-10 size-12 flex items-center justify-center rounded-full bg-[#B3AFA9] hover:bg-[#B3AFA9]/80 transition-colors text-cream"
         @click.stop="prev"
       >
         <Icon name="heroicons:chevron-left" class="size-6" />
       </button>
       <button
-        class="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-cream/10 hover:bg-cream/20 transition-colors text-cream/80"
+        class="absolute right-4 top-1/2 -translate-y-1/2 z-10 size-12 flex items-center justify-center rounded-full bg-[#B3AFA9] hover:bg-[#B3AFA9]/80 transition-colors text-cream"
         @click.stop="next"
       >
         <Icon name="heroicons:chevron-right" class="size-6" />

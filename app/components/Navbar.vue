@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="fixed top-5 sm:top-6 left-1/2 -translate-x-1/2 z-50 px-6 sm:px-2 py-1.5 sm:py-2 rounded-full border border-ink-soft/20 bg-ink/60 backdrop-blur-xl shadow-sm"
+    class="fixed top-5 sm:top-6 left-1/2 -translate-x-1/2 z-50 px-6 sm:px-2 py-1.5 sm:py-2 rounded-full border border-ink-soft/20 backdrop-blur-xl shadow-sm"
   >
     <div class="flex items-center gap-0.5 sm:gap-1 flex-nowrap">
       <NuxtLink
@@ -37,6 +37,6 @@
 const links = [
   { to: '/', label: '时间线' },
   { to: '/albums', label: '相册' },
-  { to: '/search', label: '搜索' },
+  { to: '/favorites', label: '收藏' },
 ]
 </script>

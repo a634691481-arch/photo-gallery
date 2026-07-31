@@ -49,7 +49,7 @@
           </div>
         </div>
 
-        <div v-if="files.length" class="mt-8 space-y-3">
+        <div v-if="files.length" class="mt-8 space-y-3 pb-28">
           <div
             v-for="(file, i) in files"
             :key="file.name"
@@ -87,46 +87,149 @@
             </div>
           </div>
         </div>
-
-        <div v-if="files.length" class="mt-6">
-          <label class="block text-sm font-medium mb-2">添加到相册</label>
-          <select
-            v-model="selectedAlbum"
-            class="w-full px-4 py-3 rounded-xl border border-ink-soft/20 bg-ink-soft/20 text-ink focus:outline-none focus:border-accent text-sm transition-colors cursor-pointer appearance-none"
-            style="color-scheme: dark"
-          >
-            <option value="" class="bg-surface text-ink-muted">不加入相册</option>
-            <option v-for="a in albums" :key="a.id" :value="a.id" class="bg-surface text-ink">
-              {{ a.title }}
-            </option>
-          </select>
-        </div>
-
-        <div v-if="files.length" class="mt-6 flex justify-center">
-          <button
-            :disabled="uploading"
-            class="px-8 py-3 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink font-display font-medium text-sm transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-            @click="startUpload"
-          >
-            {{ uploading ? '上传中...' : `上传 ${files.length} 张照片` }}
-          </button>
-        </div>
       </div>
     </section>
+
+    <div
+      v-if="files.length"
+      class="fixed bottom-0 left-0 right-0 z-50 border-t border-ink-soft/10 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.06)]"
+    >
+      <div v-if="uploading" class="h-1 bg-ink-soft/15">
+        <div
+          class="h-full bg-accent transition-all duration-300"
+          :style="{ width: `${totalProgress}%` }"
+        />
+      </div>
+      <div class="max-w-2xl mx-auto px-4 py-3 flex items-center gap-2 sm:gap-3">
+        <select
+          v-model="selectedAlbum"
+          class="flex-1 min-w-0 px-3 py-2 rounded-xl border border-ink-soft/20 bg-ink-soft/20 text-sm text-ink focus:outline-none focus:border-accent transition-colors cursor-pointer appearance-none"
+          style="color-scheme: dark"
+        >
+          <option value="" class="bg-surface text-ink-muted">不加入相册</option>
+          <option v-for="a in albums" :key="a.id" :value="a.id" class="bg-surface text-ink">
+            {{ a.title }}
+          </option>
+        </select>
+        <button
+          class="shrink-0 size-9 rounded-full border border-ink-soft/20 text-ink-muted hover:text-ink hover:border-ink/40 flex items-center justify-center transition-colors"
+          title="新建相册"
+          @click="showCreateAlbum = true"
+        >
+          <Icon name="heroicons:plus" class="size-4" />
+        </button>
+        <button
+          class="shrink-0 px-5 py-2.5 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink text-sm font-medium transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+          :disabled="uploading || !files.length"
+          @click="startUpload"
+        >
+          {{ uploading ? `${totalProgress}%` : `上传 ${files.length} 张` }}
+        </button>
+      </div>
+    </div>
+
+    <Teleport to="body">
+      <div
+        v-if="showCreateAlbum"
+        class="fixed inset-0 z-[100] bg-cream/60 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+        @click.self="showCreateAlbum = false"
+        @keydown.enter.prevent="createAlbum"
+      >
+        <div
+          class="w-full max-w-sm bg-surface dark:bg-ink rounded-2xl p-6 shadow-xl border border-cream-dark/30 dark:border-ink-soft/10 text-ink dark:text-cream"
+        >
+          <h3 class="font-display font-medium mb-4">新建相册</h3>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-medium mb-1.5 text-ink-muted">相册名称</label>
+              <input
+                v-model="newAlbumTitle"
+                type="text"
+                placeholder="例如：2026 暑假旅行"
+                class="w-full px-4 py-3 rounded-xl border border-ink-soft/20 bg-transparent text-sm text-ink dark:text-cream placeholder:text-ink-muted/50 focus:outline-none focus:border-accent transition-colors"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-medium mb-1.5 text-ink-muted">描述（可选）</label>
+              <input
+                v-model="newAlbumDesc"
+                type="text"
+                placeholder="简单描述一下这个相册"
+                class="w-full px-4 py-3 rounded-xl border border-ink-soft/20 bg-transparent text-sm text-ink dark:text-cream placeholder:text-ink-muted/50 focus:outline-none focus:border-accent transition-colors"
+              />
+            </div>
+          </div>
+          <div class="mt-6 flex gap-3">
+            <button
+              class="flex-1 px-4 py-2.5 rounded-full border border-cream-dark/30 dark:border-ink-soft/20 text-sm text-ink-muted hover:text-ink transition-colors"
+              @click="showCreateAlbum = false"
+            >
+              取消
+            </button>
+            <button
+              class="flex-1 px-4 py-2.5 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink text-sm font-medium transition-all duration-300 hover:scale-[1.02] disabled:opacity-50"
+              :disabled="!newAlbumTitle.trim() || creatingAlbum"
+              @click="createAlbum"
+            >
+              {{ creatingAlbum ? '创建中...' : '创建' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
 
-const { files, uploading, addFiles, removeFile, uploadAll } = useUpload()
+const { files, uploading, addFiles, removeFile, uploadAll, clear } = useUpload()
+
+const totalProgress = computed(() => {
+  const total = files.value.reduce((s, f) => s + f.size, 0)
+  if (!total) return 0
+  const done = files.value.reduce((s, f) => {
+    const pct = f.status === 'done' ? 100 : f.status === 'error' ? 0 : f.progress
+    return s + (f.size * pct) / 100
+  }, 0)
+  return Math.min(100, Math.round((done / total) * 100))
+})
 const isDragging = ref(false)
-const selectedAlbum = ref('')
+const route = useRoute()
+const selectedAlbum = ref((route.query.album as string) || '')
 const dropZone = ref<HTMLElement>()
 const fileInput = ref<HTMLInputElement>()
 
-const { data: albumData } = useFetch('/api/albums')
+const { data: albumData, refresh: refreshAlbums } = useFetch('/api/albums')
 const albums = computed(() => (albumData.value as any[]) ?? [])
+const showCreateAlbum = ref(false)
+const newAlbumTitle = ref('')
+const newAlbumDesc = ref('')
+const creatingAlbum = ref(false)
+
+const createAlbum = async () => {
+  if (!newAlbumTitle.value.trim() || creatingAlbum.value) return
+  creatingAlbum.value = true
+  try {
+    const { id } = await $fetch('/api/albums', {
+      method: 'POST',
+      body: {
+        title: newAlbumTitle.value.trim(),
+        description: newAlbumDesc.value.trim() || undefined,
+      },
+    })
+    await refreshAlbums()
+    selectedAlbum.value = id
+    showCreateAlbum.value = false
+    newAlbumTitle.value = ''
+    newAlbumDesc.value = ''
+    toast.success('相册创建成功')
+  } catch {
+    toast.error('创建失败，请重试')
+  } finally {
+    creatingAlbum.value = false
+  }
+}
 
 const formatSize = (bytes: number) => {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
@@ -149,8 +252,10 @@ const toast = useToast()
 
 const startUpload = async () => {
   const { ok, fail } = await uploadAll(selectedAlbum.value || undefined)
-  if (ok > 0 && fail === 0) toast.success(`上传成功 ${ok} 张照片`)
-  else if (ok > 0 && fail > 0) toast.error(`成功 ${ok} 张，失败 ${fail} 张，可重试`)
+  if (ok > 0 && fail === 0) {
+    toast.success(`上传成功 ${ok} 张照片`)
+    clear()
+  } else if (ok > 0 && fail > 0) toast.error(`成功 ${ok} 张，失败 ${fail} 张，可重试`)
   else if (fail > 0) toast.error(`全部失败（${fail} 张），可点击重试`)
 }
 

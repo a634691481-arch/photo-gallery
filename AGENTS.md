@@ -62,3 +62,17 @@ server/
 - Ali OSS credentials via env vars (see `.env.example`)
 - GSAP plugin is client-only (`plugins/gsap.client.ts`)
 - Nuxt 4 compat date: `2026-07-30`
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues (use the `gh` CLI). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Five default role labels: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `CONTEXT.md` at repo root + ADRs in `docs/adr/`. See `docs/agents/domain.md`.

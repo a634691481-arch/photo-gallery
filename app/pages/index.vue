@@ -32,6 +32,26 @@
           >
             {{ m.label }}
           </button>
+          <div class="ml-auto hidden lg:flex items-center gap-2 shrink-0">
+            <button
+              v-if="batchMode"
+              class="px-4 py-2 text-xs sm:text-sm rounded-full border border-ink-soft/20 text-ink-muted hover:text-ink hover:border-ink/40 transition-all duration-300 whitespace-nowrap"
+              @click="toggleSelectAll"
+            >
+              {{ allSelected ? '取消全选' : '全选' }}
+            </button>
+            <button
+              class="px-4 py-2 text-xs sm:text-sm rounded-full border transition-all duration-300 whitespace-nowrap"
+              :class="
+                batchMode
+                  ? 'bg-accent text-cream border-accent'
+                  : 'border-ink-soft/20 text-ink-muted hover:text-ink hover:border-ink/40'
+              "
+              @click="toggleBatchMode"
+            >
+              {{ batchMode ? `完成 (${selectedIds.length})` : '批量管理' }}
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -58,9 +78,26 @@
             <div
               v-for="photo in group.photos"
               :key="photo.id"
-              class="photo-card group relative overflow-hidden rounded-2xl bg-ink-soft/10 cursor-pointer break-inside-avoid mb-3 sm:mb-4"
-              @click="openPhoto(photo)"
+              class="photo-card group relative overflow-hidden rounded-2xl bg-ink-soft/10 cursor-pointer break-inside-avoid mb-3 sm:mb-4 transition-all duration-200"
+              :class="
+                batchMode && isSelected(photo.id)
+                  ? 'ring-2 ring-[#EC5255]/90 shadow-lg shadow-[#EC5255]/25'
+                  : ''
+              "
+              @click="batchMode ? toggleSelect(photo) : openPhoto(photo)"
             >
+              <button
+                v-if="batchMode"
+                class="absolute top-3 left-3 z-10 size-6 rounded-full flex items-center justify-center transition-all duration-200"
+                :class="
+                  isSelected(photo.id)
+                    ? 'bg-[#EC5255] text-cream'
+                    : 'bg-ink/60 backdrop-blur-sm text-transparent hover:text-[#EC5255]'
+                "
+                @click.stop="toggleSelect(photo)"
+              >
+                <Icon name="heroicons:check" class="size-4" />
+              </button>
               <img
                 :src="photo.webpUrl"
                 :alt="photo.fileName"
@@ -108,6 +145,124 @@
 
     <MonthNav :months="sideMonths" />
 
+    <div
+      v-if="batchMode"
+      class="hidden lg:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-50 items-center gap-4 px-5 py-3 rounded-full bg-ink/85 backdrop-blur-2xl border border-ink-soft/10 shadow-xl"
+    >
+      <span class="text-cream/80 text-sm whitespace-nowrap">
+        已选 <span class="font-medium text-cream">{{ selectedIds.length }}</span> 张
+      </span>
+      <div class="w-px h-5 bg-cream/15" />
+      <button
+        class="px-4 py-1.5 rounded-full bg-accent text-cream text-sm font-medium transition-all duration-300 hover:scale-105"
+        :disabled="!selectedIds.length"
+        :class="{ 'opacity-40 pointer-events-none': !selectedIds.length }"
+        @click="openMoveDialog"
+      >
+        移入相册
+      </button>
+      <button
+        class="px-4 py-1.5 rounded-full bg-accent text-cream text-sm font-medium transition-all duration-300 hover:scale-105"
+        :disabled="!selectedIds.length"
+        :class="{ 'opacity-40 pointer-events-none': !selectedIds.length }"
+        @click="showDeleteConfirm = true"
+      >
+        删除
+      </button>
+      <button
+        class="px-3 py-1.5 rounded-full text-sm text-cream/60 hover:text-cream transition-colors"
+        @click="exitBatchMode"
+      >
+        取消
+      </button>
+    </div>
+
+    <Teleport to="body">
+      <div
+        v-if="showMoveDialog"
+        class="fixed inset-0 z-[100] bg-cream/60 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+        @click.self="showMoveDialog = false"
+        @keydown.enter.prevent="moveSelected"
+      >
+        <div
+          class="w-full max-w-sm bg-surface dark:bg-ink rounded-2xl p-6 shadow-xl border border-cream-dark/30 dark:border-ink-soft/10 text-ink dark:text-cream"
+        >
+          <h3 class="font-display font-medium mb-4">移入相册</h3>
+          <div v-if="moveAlbumsLoading" class="text-sm text-ink-muted py-4 text-center">
+            加载中...
+          </div>
+          <div v-else class="max-h-64 overflow-y-auto space-y-2">
+            <label
+              v-for="a in moveAlbums"
+              :key="a.id"
+              class="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors"
+              :class="
+                targetAlbumId === a.id
+                  ? 'bg-accent/10 ring-1 ring-accent/40'
+                  : 'hover:bg-ink-soft/10'
+              "
+            >
+              <input
+                v-model="targetAlbumId"
+                type="radio"
+                :value="a.id"
+                class="accent-[#EC5255] size-4 focus:outline-none focus:ring-2 focus:ring-[#EC5255]/40 focus:ring-offset-2 focus:ring-offset-surface rounded-full"
+              />
+              <span class="flex-1 text-sm truncate">{{ a.title }}</span>
+              <span class="text-xs text-ink-muted shrink-0">{{ a.photoCount }} 张</span>
+            </label>
+            <NuxtLink
+              to="/albums/create"
+              class="flex items-center justify-center gap-1.5 p-3 rounded-xl text-sm text-ink-muted hover:text-ink hover:bg-ink-soft/10 transition-colors"
+              @click="showMoveDialog = false"
+            >
+              <Icon name="heroicons:plus" class="size-4" />新建相册
+            </NuxtLink>
+          </div>
+          <button
+            class="mt-5 w-full py-2.5 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink text-sm font-medium transition-all duration-300 hover:scale-[1.02] disabled:opacity-40"
+            :disabled="!targetAlbumId || moving"
+            @click="moveSelected"
+          >
+            {{ moving ? '移入中...' : `移入 ${selectedIds.length} 张照片` }}
+          </button>
+        </div>
+      </div>
+
+      <div
+        v-if="showDeleteConfirm"
+        class="fixed inset-0 z-[100] bg-cream/60 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+        @click.self="showDeleteConfirm = false"
+        @keydown.enter.prevent="deleteSelected"
+      >
+        <div
+          class="w-full max-w-sm bg-surface dark:bg-ink rounded-2xl p-6 shadow-xl border border-cream-dark/30 dark:border-ink-soft/10 text-ink dark:text-cream"
+        >
+          <h3 class="font-display font-medium mb-2">删除照片</h3>
+          <p class="text-sm text-ink-muted mb-6">
+            确定要删除选中的
+            <span class="text-red-500 font-medium">{{ selectedIds.length }}</span>
+            张照片吗？此操作不可恢复。
+          </p>
+          <div class="flex gap-3">
+            <button
+              class="flex-1 px-4 py-2.5 rounded-full border border-cream-dark/30 dark:border-ink-soft/20 text-sm text-ink-muted hover:text-ink transition-colors"
+              @click="showDeleteConfirm = false"
+            >
+              取消
+            </button>
+            <button
+              class="flex-1 px-4 py-2.5 rounded-full bg-red-500 text-cream text-sm font-medium transition-all duration-300 hover:scale-[1.02] disabled:opacity-50"
+              :disabled="deleting"
+              @click="deleteSelected"
+            >
+              {{ deleting ? '删除中...' : '确认删除' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
     <PhotoPreview
       :photos="allPhotos"
       :visible="previewVisible"
@@ -131,6 +286,93 @@ const initialLoading = ref(true)
 const page = ref(0)
 const hasMore = ref(true)
 const loadTrigger = ref<HTMLElement>()
+const batchMode = ref(false)
+const selectedIds = ref<string[]>([])
+const showMoveDialog = ref(false)
+const showDeleteConfirm = ref(false)
+const targetAlbumId = ref('')
+const moveAlbums = ref<any[]>([])
+const moveAlbumsLoading = ref(false)
+const moving = ref(false)
+const deleting = ref(false)
+const toast = useToast()
+
+const isSelected = (id: string) => selectedIds.value.includes(id)
+
+const toggleSelect = (photo: any) => {
+  const idx = selectedIds.value.indexOf(photo.id)
+  if (idx >= 0) selectedIds.value.splice(idx, 1)
+  else selectedIds.value.push(photo.id)
+}
+
+const allSelected = computed(
+  () => allPhotos.value.length > 0 && selectedIds.value.length === allPhotos.value.length,
+)
+
+const toggleSelectAll = () => {
+  if (allSelected.value) selectedIds.value = []
+  else selectedIds.value = allPhotos.value.map((p) => p.id)
+}
+
+const toggleBatchMode = () => {
+  if (batchMode.value) exitBatchMode()
+  else batchMode.value = true
+}
+
+const exitBatchMode = () => {
+  batchMode.value = false
+  selectedIds.value = []
+  showMoveDialog.value = false
+  showDeleteConfirm.value = false
+}
+
+const openMoveDialog = async () => {
+  showMoveDialog.value = true
+  targetAlbumId.value = ''
+  moveAlbumsLoading.value = true
+  try {
+    const data = await $fetch('/api/albums')
+    moveAlbums.value = data ?? []
+  } finally {
+    moveAlbumsLoading.value = false
+  }
+}
+
+const moveSelected = async () => {
+  if (!targetAlbumId.value || moving.value) return
+  moving.value = true
+  try {
+    await $fetch('/api/photos/batch-move', {
+      method: 'POST',
+      body: { ids: selectedIds.value, albumId: targetAlbumId.value },
+    })
+    toast.success(`已移入相册 ${selectedIds.value.length} 张照片`)
+    exitBatchMode()
+  } catch {
+    toast.error('移入失败，请重试')
+  } finally {
+    moving.value = false
+  }
+}
+
+const deleteSelected = async () => {
+  if (deleting.value) return
+  deleting.value = true
+  try {
+    const { deleted } = await $fetch('/api/photos/batch-delete', {
+      method: 'POST',
+      body: { ids: selectedIds.value },
+    })
+    const removed = new Set(selectedIds.value)
+    allPhotos.value = allPhotos.value.filter((p) => !removed.has(p.id))
+    toast.success(`已删除 ${deleted ?? selectedIds.value.length} 张照片`)
+    exitBatchMode()
+  } catch {
+    toast.error('删除失败，请重试')
+  } finally {
+    deleting.value = false
+  }
+}
 
 const months = [
   { label: '全部', value: 'all' },
@@ -159,11 +401,19 @@ const formatDate = (d: string | null) =>
 const { onImgError } = useImgFallback()
 
 const sideMonths = computed(() => photoGroups.value.map((g) => g.label))
-const toggleLike = (photo: any) => {
-  photo.liked = !photo.liked
-  photo.likeCount = photo.liked
-    ? (photo.likeCount || 0) + 1
-    : Math.max(0, (photo.likeCount || 1) - 1)
+const toggleLike = async (photo: any) => {
+  const target = !photo.liked
+  photo.liked = target
+  photo.likeCount = target ? (photo.likeCount || 0) + 1 : Math.max(0, (photo.likeCount || 1) - 1)
+  try {
+    await $fetch(`/api/photos/${photo.id}/like`, {
+      method: target ? 'POST' : 'DELETE',
+    })
+  } catch {
+    photo.liked = !target
+    photo.likeCount = target ? Math.max(0, (photo.likeCount || 1) - 1) : (photo.likeCount || 0) + 1
+    toast.error('操作失败，请重试')
+  }
 }
 const openPhoto = (photo: any) => {
   previewIndex.value = allPhotos.value.findIndex((p: any) => p.id === photo.id)
@@ -178,7 +428,13 @@ async function fetchPhotos(reset = false) {
   }
   if (!hasMore.value || loadingMore.value) return
   loadingMore.value = true
-  const data = await $fetch('/api/photos', { params: { cursor: page.value, limit: 30 } })
+  const data = await $fetch('/api/photos', {
+    params: {
+      cursor: page.value,
+      limit: 30,
+      year: selectedMonth.value !== 'all' ? selectedMonth.value : undefined,
+    },
+  })
   if (data?.data?.length) {
     allPhotos.value.push(...data.data)
     page.value += data.data.length
@@ -210,7 +466,8 @@ function refreshGSAP() {
         scrollTrigger: {
           trigger: el,
           start: 'top bottom-=60px',
-          toggleActions: 'play none none reverse',
+          toggleActions: 'play none none none',
+          once: true,
         },
       },
     )

@@ -26,13 +26,17 @@ export async function uploadToOSS(key: string, buffer: Buffer, mimeType: string)
   return result.url
 }
 
+export function getSignedUrl(key: string, expires = 3600 * 24 * 365) {
+  const oss = getOSSClient()
+  return oss.signatureUrl(key, { expires })
+}
+
 export async function deleteFromOSS(key: string) {
   const oss = getOSSClient()
   await oss.delete(key)
 }
 
-export function generateOSSKey(prefix: string, fileName: string) {
-  const date = new Date()
+export function generateOSSKey(prefix: string, fileName: string, date = new Date()) {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const ext = fileName.split('.').pop()

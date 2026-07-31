@@ -1,18 +1,25 @@
+#!/usr/bin/env node
+/**
+ * Initialize the MySQL database: create tables and the system user.
+ * Usage: node scripts/setup-db.mjs
+ * No mock/seed data is inserted.
+ */
 import mysql from 'mysql2/promise'
+import { randomUUID } from 'node:crypto'
 
 const pool = mysql.createPool({
-  host: '120.77.81.21',
-  port: 3306,
-  user: 'photo-gallery',
-  password: '2WrsTYEACYmCtpX2',
-  database: 'photo-gallery',
+  host: process.env.DB_HOST || '120.77.81.21',
+  port: Number(process.env.DB_PORT || 3306),
+  user: process.env.DB_USER || 'photo-gallery',
+  password: process.env.DB_PASSWORD || '2WrsTYEACYmCtpX2',
+  database: process.env.DB_NAME || 'photo-gallery',
   connectionLimit: 3,
   charset: 'utf8mb4',
 })
 
 try {
   await pool.query('SELECT 1')
-  console.log('MySQL connected to photo-gallery database')
+  console.log('MySQL connected')
 } catch (e) {
   console.error('Connection failed:', e.message)
   process.exit(1)
@@ -34,211 +41,14 @@ const tbls = [
 for (const sql of tbls) await pool.query(sql)
 console.log('Tables created')
 
-const [r] = await pool.query('SELECT COUNT(*) as cnt FROM photos')
-if (r[0].cnt > 0) {
-  console.log('Already seeded')
-  await pool.end()
-  process.exit(0)
+// Ensure at least one system user exists (app requires it for FK references)
+const [users] = await pool.query('SELECT id FROM users LIMIT 1')
+if (!users.length) {
+  await pool.execute('INSERT INTO users (id, role) VALUES (?, ?)', [randomUUID(), 'admin'])
+  console.log('System user created')
+} else {
+  console.log('System user exists')
 }
 
-const uid = '10000000-0000-0000-0000-000000000001'
-await pool.execute('INSERT INTO users (id, role) VALUES (?, ?)', [uid, 'admin'])
-
-const people = ['宝宝 Emma', '妈妈', '爸爸', '奶奶', '爷爷']
-const faceIds = []
-for (let fi = 0; fi < people.length; fi++) {
-  const fid = `${10000001 + fi}0000-0000-0000-000000000000`
-  await pool.execute('INSERT INTO face_labels (id, name, created_by) VALUES (?, ?, ?)', [
-    fid,
-    people[fi],
-    uid,
-  ])
-  faceIds.push(fid)
-}
-
-const albumIds = []
-const albumDefs = [
-  '2026 暑假旅行',
-  '宝宝第一步',
-  '春节团聚',
-  '生日派对',
-  '周末徒步',
-  '毕业季',
-  '新年烟花',
-  '宠物日常',
-  '美食记录',
-  '公园漫步',
-]
-for (let ai = 0; ai < albumDefs.length; ai++) {
-  const aid = `2000000${ai}0000-0000-0000-000000000000`
-  await pool.execute('INSERT INTO albums (id, title, cover_url, created_by) VALUES (?, ?, ?, ?)', [
-    aid,
-    albumDefs[ai],
-    `https://picsum.photos/seed/alb${ai}/800/600`,
-    uid,
-  ])
-  albumIds.push(aid)
-}
-
-const locations = [
-  { n: '北京', la: 39.9, ln: 116.4 },
-  { n: '上海', la: 31.2, ln: 121.5 },
-  { n: '杭州', la: 30.3, ln: 120.2 },
-  { n: '三亚', la: 18.3, ln: 109.5 },
-  { n: '成都', la: 30.6, ln: 104.1 },
-  { n: '昆明', la: 25.0, ln: 102.7 },
-  { n: '桂林', la: 25.2, ln: 110.2 },
-  { n: '厦门', la: 24.5, ln: 118.1 },
-]
-const cameras = [
-  'Apple iPhone 15 Pro',
-  'Apple iPhone 14 Pro',
-  'Canon EOS R6',
-  'Sony A7M4',
-  'DJI Mini 3 Pro',
-]
-const cmts = [
-  '太可爱了！',
-  '美好的回忆',
-  '这张拍得真好',
-  '好怀念那天',
-  '宝宝笑得好甜',
-  '真幸福的时光',
-]
-const monthBatches = [
-  [2026, 7, 50],
-  [2026, 6, 45],
-  [2026, 5, 35],
-  [2026, 3, 40],
-  [2026, 1, 30],
-  [2025, 12, 55],
-  [2025, 10, 40],
-  [2025, 8, 60],
-  [2025, 5, 35],
-  [2025, 2, 25],
-  [2024, 11, 45],
-  [2024, 7, 50],
-  [2024, 3, 30],
-]
-
-let s = 0
-for (const [year, month, count] of monthBatches) {
-  for (let i = 0; i < count; i++) {
-    s++
-    const pid = `3000${String(s).padStart(4, '0')}0000-0000-0000-000000000000`
-    const w = 400 + (s % 3) * 200
-    const h = 300 + (s % 4) * 200
-    const isV = s % 20 === 0
-    const loc = locations[s % locations.length]
-    const day = Math.min(28, Math.ceil(Math.random() * 28))
-    const hour = Math.ceil(Math.random() * 14) + 6
-    const min = Math.floor(Math.random() * 60)
-    const cam = cameras[s % cameras.length]
-    const camParts = cam.split(' ')
-    const camMake = camParts.slice(0, -1).join(' ')
-    const camModel = camParts[camParts.length - 1]
-    await pool.execute(
-      'INSERT INTO photos (id,original_url,thumbnail_url,webp_url,width,height,file_size,file_name,mime_type,hash,taken_at,latitude,longitude,location_name,camera_make,camera_model,is_video,uploaded_by) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-      [
-        pid,
-        `https://picsum.photos/seed/s${s}/${w * 2}/${h * 2}`,
-        `https://picsum.photos/seed/s${s}/400/300`,
-        `https://picsum.photos/seed/s${s}/${w}/${h}`,
-        w * 2,
-        h * 2,
-        500000 + Math.floor(Math.random() * 7500000),
-        isV ? `MOV_${s}.mp4` : `IMG_${s}.jpg`,
-        isV ? 'video/mp4' : 'image/jpeg',
-        `hash_${s}_${Math.floor(Math.random() * 9000) + 1000}`,
-        `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}:00`,
-        loc.la + (Math.random() - 0.5) * 0.1,
-        loc.ln + (Math.random() - 0.5) * 0.1,
-        loc.n,
-        camMake,
-        camModel,
-        isV ? 1 : 0,
-        uid,
-      ],
-    )
-    if (s % 3 === 0)
-      await pool.execute('INSERT INTO album_photos (album_id, photo_id) VALUES (?,?)', [
-        albumIds[Math.floor(Math.random() * albumIds.length)],
-        pid,
-      ])
-    const fid = faceIds[Math.floor(Math.random() * faceIds.length)]
-    await pool.execute(
-      'INSERT INTO detected_faces (id,photo_id,face_label_id,x,y,width,height) VALUES (?,?,?,?,?,?,?)',
-      [
-        `4${String(s).padStart(6, '0')}0000-0000-0000-000000000000`,
-        pid,
-        fid,
-        0.2 + Math.random() * 0.6,
-        0.1 + Math.random() * 0.4,
-        0.1 + Math.random() * 0.2,
-        0.1 + Math.random() * 0.2,
-      ],
-    )
-    if (s % 7 === 0)
-      await pool.execute('INSERT INTO likes (id,photo_id,user_id) VALUES (?,?,?)', [
-        `5${String(s).padStart(6, '0')}0000-0000-0000-000000000000`,
-        pid,
-        uid,
-      ])
-    if (s % 11 === 0)
-      await pool.execute('INSERT INTO comments (id,content,photo_id,user_id) VALUES (?,?,?,?)', [
-        `6${String(s).padStart(6, '0')}0000-0000-0000-000000000000`,
-        cmts[Math.floor(Math.random() * cmts.length)],
-        pid,
-        uid,
-      ])
-  }
-  console.log(`  ${year}/${month}: ${count} photos`)
-}
-console.log(`Total: ${s} photos`)
-
-const anns = [
-  ['宝宝 Emma 生日', '2022-03-15', '小天使来到这个世界'],
-  ['结婚纪念日', '2019-08-08', '牵手的第 N 年'],
-  ['搬进新家', '2024-06-20', '属于我们的温暖小窝'],
-  ['爸爸生日', '1985-11-28', null],
-  ['妈妈生日', '1988-01-12', null],
-]
-for (let ai = 0; ai < anns.length; ai++) {
-  await pool.execute(
-    'INSERT INTO anniversaries (id,title,date,description,created_by) VALUES (?,?,?,?,?)',
-    [
-      `70${String(ai).padStart(6, '0')}0000-0000-0000-000000000000`,
-      anns[ai][0],
-      anns[ai][1],
-      anns[ai][2],
-      uid,
-    ],
-  )
-}
-
-await pool.execute(
-  'INSERT INTO notifications (id,user_id,type,title,body,link) VALUES (?,?,?,?,?,?),(?,?,?,?,?,?),(?,?,?,?,?,?)',
-  [
-    '80000000-0000-0000-0000-000000000001',
-    uid,
-    'info',
-    '欢迎加入',
-    '欢迎来到家庭相册！',
-    '/',
-    '80000000-0000-0000-0000-000000000002',
-    uid,
-    'comment',
-    '新评论',
-    '妈妈评论了你的照片',
-    '/',
-    '80000000-0000-0000-0000-000000000003',
-    uid,
-    'like',
-    '有人点赞',
-    '爸爸赞了你的照片',
-    '/',
-  ],
-)
-
-console.log('Seed complete!')
 await pool.end()
+console.log('Done')
