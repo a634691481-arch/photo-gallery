@@ -32,6 +32,10 @@ export default defineEventHandler(async (event) => {
         fileName: p.fileName,
         takenAt: p.takenAt,
         isVideo: p.isVideo,
+        videoUrl: p.videoUrl,
+        width: p.width,
+        height: p.height,
+        aspectRatio: p.aspectRatio,
       }
     }),
   }

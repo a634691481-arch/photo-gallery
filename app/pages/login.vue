@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen flex items-center justify-end px-4 py-24">
-    <div class="w-full max-w-sm mr-4 lg:mr-20">
+  <div class="min-h-screen flex items-center justify-center px-4 py-24">
+    <div class="w-full max-w-sm">
       <div class="text-center mb-10">
         <span
           class="inline-flex items-center gap-2 font-display text-2xl font-semibold tracking-tight"
@@ -46,7 +46,12 @@
 
             <button
               type="submit"
-              class="w-full px-6 py-3 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink text-sm font-medium transition-all duration-500 ease-soft hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full px-6 py-3 rounded-full text-sm font-medium transition-all duration-500 ease-soft hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed"
+              :class="
+                password
+                  ? 'bg-accent text-cream shadow-soft hover:shadow-soft-lg'
+                  : 'bg-ink/40 text-cream/60 cursor-not-allowed'
+              "
               :disabled="submitting || !password"
             >
               {{ submitting ? '验证中...' : '登录' }}

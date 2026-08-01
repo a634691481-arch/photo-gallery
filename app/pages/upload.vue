@@ -59,42 +59,122 @@
           <div
             v-for="(file, i) in files"
             :key="file.name"
-            class="flex items-center gap-4 p-3 rounded-2xl bg-cream-dark/40 dark:bg-ink-soft/10 ring-1 ring-ink-soft/5"
+            class="p-3 rounded-2xl bg-cream-dark/40 dark:bg-ink-soft/10 ring-1 ring-ink-soft/5"
           >
+            <div class="flex items-center gap-4">
+              <div
+                class="w-12 h-12 rounded-lg overflow-hidden bg-cream-dark/40 dark:bg-ink-soft/20 shrink-0 flex items-center justify-center"
+              >
+                <img
+                  v-if="file.preview"
+                  :src="file.preview"
+                  alt=""
+                  class="w-full h-full object-cover"
+                />
+                <Icon
+                  v-else-if="file.file.type.startsWith('video/')"
+                  name="heroicons:film"
+                  class="size-5 text-ink-muted"
+                />
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium truncate">{{ file.name }}</p>
+                <p class="text-xs text-ink-muted">{{ formatSize(file.size) }}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button
+                  v-if="file.status === 'done' && file.meta"
+                  class="px-3 py-1 text-xs rounded-full bg-ink-soft/5 ring-1 ring-ink-soft/10 text-ink-muted hover:text-ink hover:bg-ink-soft/10 transition-colors"
+                  @click="toggleMeta(i)"
+                >
+                  {{ expandedMeta === i ? '收起信息' : '查看信息' }}
+                </button>
+                <span v-if="file.status === 'uploading'" class="text-xs text-ink-muted"
+                  >{{ file.progress }}%</span
+                >
+                <span v-else-if="file.status === 'done'" class="text-xs text-green-500">完成</span>
+                <span v-else-if="file.status === 'error'" class="text-xs text-red-500">失败</span>
+                <button
+                  v-if="file.status === 'error'"
+                  class="px-2 py-1 text-xs rounded-full bg-ink-soft/20 text-ink hover:bg-ink-soft/40 transition-colors"
+                  @click="retryFile(i)"
+                >
+                  重试
+                </button>
+                <button
+                  v-if="file.status === 'pending' || file.status === 'error'"
+                  class="p-1 rounded-full hover:bg-cream-dark/40 dark:hover:bg-ink-soft/20 transition-colors"
+                  @click="removeFile(i)"
+                >
+                  <Icon name="heroicons:x-mark" class="size-4" />
+                </button>
+              </div>
+            </div>
+
             <div
-              class="w-12 h-12 rounded-lg overflow-hidden bg-cream-dark/40 dark:bg-ink-soft/20 shrink-0"
+              v-if="expandedMeta === i && file.meta"
+              class="mt-3 pt-3 border-t border-ink-soft/10 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 text-xs"
             >
-              <img
-                v-if="file.preview"
-                :src="file.preview"
-                alt=""
-                class="w-full h-full object-cover"
-              />
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium truncate">{{ file.name }}</p>
-              <p class="text-xs text-ink-muted">{{ formatSize(file.size) }}</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <span v-if="file.status === 'uploading'" class="text-xs text-ink-muted"
-                >{{ file.progress }}%</span
-              >
-              <span v-else-if="file.status === 'done'" class="text-xs text-green-500">完成</span>
-              <span v-else-if="file.status === 'error'" class="text-xs text-red-500">失败</span>
-              <button
-                v-if="file.status === 'error'"
-                class="px-2 py-1 text-xs rounded-full bg-ink-soft/20 text-ink hover:bg-ink-soft/40 transition-colors"
-                @click="retryFile(i)"
-              >
-                重试
-              </button>
-              <button
-                v-if="file.status === 'pending' || file.status === 'error'"
-                class="p-1 rounded-full hover:bg-cream-dark/40 dark:hover:bg-ink-soft/20 transition-colors"
-                @click="removeFile(i)"
-              >
-                <Icon name="heroicons:x-mark" class="size-4" />
-              </button>
+              <div class="flex justify-between gap-2">
+                <span class="text-ink-muted shrink-0">拍摄时间</span>
+                <span class="text-ink text-right">{{ formatTakenAt(file.meta.takenAt) }}</span>
+              </div>
+              <div class="flex justify-between gap-2">
+                <span class="text-ink-muted shrink-0">相机</span>
+                <span class="text-ink text-right truncate">
+                  {{
+                    [file.meta.cameraMake, file.meta.cameraModel].filter(Boolean).join(' ') || '—'
+                  }}
+                </span>
+              </div>
+              <div class="flex justify-between gap-2">
+                <span class="text-ink-muted shrink-0">尺寸</span>
+                <span class="text-ink text-right">
+                  {{
+                    file.meta.width && file.meta.height
+                      ? `${file.meta.width} × ${file.meta.height}`
+                      : '—'
+                  }}
+                </span>
+              </div>
+              <div class="flex justify-between gap-2">
+                <span class="text-ink-muted shrink-0">大小</span>
+                <span class="text-ink text-right">
+                  {{ file.meta.fileSize ? formatSize(file.meta.fileSize) : '—' }}
+                </span>
+              </div>
+              <div class="flex justify-between gap-2">
+                <span class="text-ink-muted shrink-0">ISO</span>
+                <span class="text-ink text-right">{{ file.meta.exif?.iso ?? '—' }}</span>
+              </div>
+              <div class="flex justify-between gap-2">
+                <span class="text-ink-muted shrink-0">光圈</span>
+                <span class="text-ink text-right">
+                  {{ file.meta.exif?.fNumber ? `f/${file.meta.exif.fNumber}` : '—' }}
+                </span>
+              </div>
+              <div class="flex justify-between gap-2">
+                <span class="text-ink-muted shrink-0">快门</span>
+                <span class="text-ink text-right">
+                  {{ formatExposure(file.meta.exif?.exposureTime) }}
+                </span>
+              </div>
+              <div class="flex justify-between gap-2">
+                <span class="text-ink-muted shrink-0">焦距</span>
+                <span class="text-ink text-right">
+                  {{ file.meta.exif?.focalLength ? `${file.meta.exif.focalLength} mm` : '—' }}
+                </span>
+              </div>
+              <div class="flex justify-between gap-2">
+                <span class="text-ink-muted shrink-0">GPS</span>
+                <span class="text-ink text-right">
+                  {{
+                    file.meta.latitude != null && file.meta.longitude != null
+                      ? `${file.meta.latitude.toFixed(5)}, ${file.meta.longitude.toFixed(5)}`
+                      : '—'
+                  }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -102,7 +182,6 @@
     </section>
 
     <div
-      v-if="files.length"
       class="fixed bottom-0 left-0 right-0 z-[var(--z-nav)] bg-surface/85 backdrop-blur-xl shadow-[0_-8px_40px_rgb(43_37_32/0.08)]"
     >
       <div v-if="uploading" class="h-1 bg-ink-soft/10">
@@ -134,62 +213,14 @@
           :disabled="uploading || !files.length"
           @click="startUpload"
         >
-          {{ uploading ? `${totalProgress}%` : `上传 ${files.length} 张` }}
+          {{
+            uploading ? `${totalProgress}%` : files.length ? `上传 ${files.length} 项` : '上传照片'
+          }}
         </button>
       </div>
     </div>
 
-    <Teleport to="body">
-      <div
-        v-if="showCreateAlbum"
-        class="fixed inset-0 z-[var(--z-dialog)] bg-cream/70 dark:bg-black/70 backdrop-blur-md flex items-center justify-center p-4 overscroll-contain"
-        @click.self="showCreateAlbum = false"
-        @keydown.enter.prevent="createAlbum"
-      >
-        <div
-          class="w-full max-w-sm p-1.5 rounded-[1.75rem] bg-ink-soft/10 ring-1 ring-ink-soft/10 shadow-soft-lg"
-        >
-          <div class="bg-surface dark:bg-surface rounded-[1.375rem] p-6 text-ink dark:text-cream">
-            <h3 class="font-display font-medium mb-4">新建相册</h3>
-            <div class="space-y-4">
-              <div>
-                <label class="block text-xs font-medium mb-1.5 text-ink-muted">相册名称</label>
-                <input
-                  v-model="newAlbumTitle"
-                  type="text"
-                  placeholder="例如：2026 暑假旅行"
-                  class="w-full px-4 py-3 rounded-xl bg-ink-soft/5 ring-1 ring-ink-soft/10 focus:ring-accent/60 text-sm text-ink placeholder:text-ink-muted/50 focus:outline-none transition-all duration-300 ease-soft"
-                />
-              </div>
-              <div>
-                <label class="block text-xs font-medium mb-1.5 text-ink-muted">描述（可选）</label>
-                <input
-                  v-model="newAlbumDesc"
-                  type="text"
-                  placeholder="简单描述一下这个相册"
-                  class="w-full px-4 py-3 rounded-xl bg-ink-soft/5 ring-1 ring-ink-soft/10 focus:ring-accent/60 text-sm text-ink placeholder:text-ink-muted/50 focus:outline-none transition-all duration-300 ease-soft"
-                />
-              </div>
-            </div>
-            <div class="mt-6 flex gap-3">
-              <button
-                class="flex-1 px-4 py-2.5 rounded-full text-sm text-ink-muted hover:text-ink hover:bg-ink-soft/10 transition-colors duration-300"
-                @click="showCreateAlbum = false"
-              >
-                取消
-              </button>
-              <button
-                class="flex-1 px-4 py-2.5 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink text-sm font-medium transition-all duration-500 ease-soft hover:scale-[1.02] disabled:opacity-50"
-                :disabled="!newAlbumTitle.trim() || creatingAlbum"
-                @click="createAlbum"
-              >
-                {{ creatingAlbum ? '创建中...' : '创建' }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Teleport>
+    <AlbumCreateDialog v-model:visible="showCreateAlbum" @created="onAlbumCreated" />
   </div>
 </template>
 
@@ -217,37 +248,34 @@ const fileInput = ref<HTMLInputElement>()
 const { data: albumData, refresh: refreshAlbums } = useFetch('/api/albums')
 const albums = computed(() => (albumData.value as any[]) ?? [])
 const showCreateAlbum = ref(false)
-const newAlbumTitle = ref('')
-const newAlbumDesc = ref('')
-const creatingAlbum = ref(false)
 
-const createAlbum = async () => {
-  if (!newAlbumTitle.value.trim() || creatingAlbum.value) return
-  creatingAlbum.value = true
-  try {
-    const { id } = await $fetch('/api/albums', {
-      method: 'POST',
-      body: {
-        title: newAlbumTitle.value.trim(),
-        description: newAlbumDesc.value.trim() || undefined,
-      },
-    })
-    await refreshAlbums()
-    selectedAlbum.value = id
-    showCreateAlbum.value = false
-    newAlbumTitle.value = ''
-    newAlbumDesc.value = ''
-    toast.success('相册创建成功')
-  } catch {
-    toast.error('创建失败，请重试')
-  } finally {
-    creatingAlbum.value = false
-  }
+const onAlbumCreated = (id: string) => {
+  selectedAlbum.value = id
+  refreshAlbums()
 }
 
 const formatSize = (bytes: number) => {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
+
+const expandedMeta = ref<number | null>(null)
+
+const toggleMeta = (i: number) => {
+  expandedMeta.value = expandedMeta.value === i ? null : i
+}
+
+const formatTakenAt = (t?: string) => {
+  if (!t) return '—'
+  const d = new Date(t.replace(' ', 'T'))
+  if (Number.isNaN(d.getTime())) return t
+  return d.toLocaleString('zh-CN', { hour12: false })
+}
+
+const formatExposure = (v?: number | null) => {
+  if (v == null || v <= 0) return '—'
+  if (v >= 1) return `${v}s`
+  return `1/${Math.round(1 / v)}s`
 }
 
 const handleDrop = (e: DragEvent) => {
@@ -269,10 +297,10 @@ useBodyLock(showCreateAlbum)
 const startUpload = async () => {
   const { ok, fail } = await uploadAll(selectedAlbum.value || undefined)
   if (ok > 0 && fail === 0) {
-    toast.success(`上传成功 ${ok} 张照片`)
+    toast.success(`上传成功 ${ok} 项`)
     clear()
-  } else if (ok > 0 && fail > 0) toast.error(`成功 ${ok} 张，失败 ${fail} 张，可重试`)
-  else if (fail > 0) toast.error(`全部失败（${fail} 张），可点击重试`)
+  } else if (ok > 0 && fail > 0) toast.error(`成功 ${ok} 项，失败 ${fail} 项，可重试`)
+  else if (fail > 0) toast.error(`全部失败（${fail} 项），可点击重试`)
 }
 
 const retryFile = (i: number) => {

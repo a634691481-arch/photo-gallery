@@ -108,8 +108,51 @@
               class="text-xs px-2 py-1 rounded-full bg-accent/10 text-accent"
               >还有 {{ item.daysLeft }} 天</span
             >
+            <button
+              class="shrink-0 size-9 rounded-full text-ink-muted opacity-0 group-hover:opacity-100 group-active:opacity-100 focus-visible:opacity-100 hover:text-red-500 hover:bg-red-500/10 flex items-center justify-center transition-all duration-300 ease-soft"
+              :title="`删除 ${item.title}`"
+              @click="askDelete(item)"
+            >
+              <Icon name="heroicons:trash" class="size-4" />
+            </button>
           </div>
         </div>
+
+        <Teleport to="body">
+          <div
+            v-if="deleteTarget"
+            class="fixed inset-0 z-[var(--z-dialog)] bg-cream/70 dark:bg-black/70 backdrop-blur-md flex items-center justify-center p-4 overscroll-contain"
+            @click.self="deleteTarget = null"
+          >
+            <div
+              class="w-full max-w-sm p-1.5 rounded-[1.75rem] bg-ink-soft/10 ring-1 ring-ink-soft/10 shadow-soft-lg"
+            >
+              <div
+                class="bg-surface dark:bg-surface rounded-[1.375rem] p-6 text-ink dark:text-cream"
+              >
+                <h3 class="font-display font-medium mb-2">删除纪念日</h3>
+                <p class="text-sm text-ink-muted leading-relaxed">
+                  确定删除「{{ deleteTarget.title }}」吗？删除后无法恢复。
+                </p>
+                <div class="mt-6 flex gap-3">
+                  <button
+                    class="flex-1 px-4 py-2.5 rounded-full text-sm text-ink-muted hover:text-ink hover:bg-ink-soft/10 transition-colors duration-300"
+                    @click="deleteTarget = null"
+                  >
+                    取消
+                  </button>
+                  <button
+                    class="flex-1 px-4 py-2.5 rounded-full bg-red-500 text-cream text-sm font-medium transition-all duration-500 ease-soft hover:scale-[1.02] active:scale-95 disabled:opacity-50"
+                    :disabled="deleting"
+                    @click="confirmDelete"
+                  >
+                    {{ deleting ? '删除中...' : '删除' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Teleport>
       </div>
     </section>
   </div>
@@ -145,6 +188,29 @@ const handleCreate = async () => {
     toast.error(e?.message || '添加失败')
   } finally {
     submitting.value = false
+  }
+}
+
+const deleteTarget = ref<any>(null)
+const deleting = ref(false)
+useBodyLock(deleteTarget)
+
+const askDelete = (item: any) => {
+  deleteTarget.value = item
+}
+
+const confirmDelete = async () => {
+  if (!deleteTarget.value || deleting.value) return
+  deleting.value = true
+  try {
+    await $fetch(`/api/memories/${deleteTarget.value.id}`, { method: 'DELETE' })
+    toast.success('纪念日已删除')
+    deleteTarget.value = null
+    await refresh()
+  } catch (e: any) {
+    toast.error(e?.message || '删除失败')
+  } finally {
+    deleting.value = false
   }
 }
 </script>

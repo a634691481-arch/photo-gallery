@@ -54,6 +54,7 @@ export default defineEventHandler(async (event) => {
       cameraModel: p.cameraModel,
       width: p.width,
       height: p.height,
+      aspectRatio: p.aspectRatio,
       fileSize: p.fileSize,
       likeCount: p.likeCount,
       commentCount: p.commentCount,

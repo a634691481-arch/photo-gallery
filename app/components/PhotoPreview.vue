@@ -31,7 +31,16 @@
         <Icon name="heroicons:chevron-right" class="size-6" />
       </button>
 
+      <video
+        v-if="isVideoPhoto"
+        :src="currentPhoto?.videoUrl"
+        controls
+        autoplay
+        playsinline
+        class="max-w-[88vw] max-h-[82vh] rounded-lg bg-black"
+      />
       <img
+        v-else
         :src="currentPhoto?.webpUrl || currentPhoto?.url"
         :alt="currentPhoto?.fileName || currentPhoto?.title"
         class="max-w-[88vw] max-h-[82vh] object-contain rounded-lg"
@@ -43,8 +52,12 @@
         <span class="text-cream/60 text-xs">{{ index + 1 }} / {{ photos.length }}</span>
         <div class="w-px h-4 bg-cream/20" />
         <a
-          v-if="currentPhoto?.webpUrl || currentPhoto?.url"
-          :href="currentPhoto.webpUrl || currentPhoto.url"
+          v-if="currentPhoto?.id || currentPhoto?.webpUrl || currentPhoto?.url"
+          :href="
+            currentPhoto.id
+              ? `/api/photos/${currentPhoto.id}/download`
+              : currentPhoto.webpUrl || currentPhoto.url
+          "
           download
           class="text-cream/70 hover:text-cream transition-colors text-xs flex items-center gap-1"
           ><Icon name="heroicons:arrow-down-tray" class="size-4" />下载</a
@@ -68,7 +81,15 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-  photos: Array<{ id?: string; webpUrl?: string; url?: string; fileName?: string; title?: string }>
+  photos: Array<{
+    id?: string
+    webpUrl?: string
+    url?: string
+    fileName?: string
+    title?: string
+    videoUrl?: string | null
+    isVideo?: number | boolean | null
+  }>
   visible: boolean
   modelValue?: number
 }>()
@@ -83,6 +104,8 @@ let timer: ReturnType<typeof setInterval> | null = null
 
 const currentPhoto = computed(() => props.photos[index.value] ?? null)
 
+const isVideoPhoto = computed(() => Boolean(currentPhoto.value?.isVideo))
+
 watch(
   () => props.visible,
   (v) => {
@@ -95,6 +118,9 @@ watch(
     if (v !== undefined) index.value = v
   },
 )
+watch(isVideoPhoto, (v) => {
+  if (v) stopAutoplay()
+})
 
 const prev = () => {
   if (index.value > 0) {

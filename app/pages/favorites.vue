@@ -35,19 +35,27 @@
             @click="openPreview(idx)"
           >
             <div class="relative overflow-hidden rounded-[1.125rem]" :style="imgRatio(photo)">
-              <img
+              <NuxtImg
                 :src="photo.webpUrl"
                 :alt="photo.fileName"
                 loading="lazy"
                 class="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-soft group-hover:scale-105"
+                sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
                 @error="onImgError"
               />
+              <div v-if="photo.isVideo" class="absolute inset-0 flex items-center justify-center">
+                <span
+                  class="flex items-center justify-center size-10 rounded-full bg-ink/55 backdrop-blur-sm text-cream ring-1 ring-cream/25 shadow-soft transition-transform duration-300 ease-soft group-hover:scale-110"
+                >
+                  <Icon name="heroicons:play" class="size-5 translate-x-0.5" />
+                </span>
+              </div>
               <button
                 class="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-accent text-cream shadow-soft text-sm font-medium transition-all duration-500 ease-soft hover:scale-110 active:scale-95"
                 @click.stop="toggleLike(photo)"
               >
-                <Icon name="heroicons:solid-heart" class="size-4" />
-                <span v-if="photo.likeCount > 0">{{ photo.likeCount }}</span>
+                <Icon name="heroicons:heart-solid" class="size-4" />
+                <span v-if="photo.likeCount > 1">{{ photo.likeCount }}</span>
               </button>
             </div>
           </div>
@@ -79,10 +87,18 @@ const { onImgError } = useImgFallback()
 interface PhotoRatio {
   width?: number | null
   height?: number | null
+  aspectRatio?: string | null
+  isVideo?: number | boolean | null
 }
 
 const imgRatio = (photo: PhotoRatio) =>
-  photo.width && photo.height ? { aspectRatio: `${photo.width} / ${photo.height}` } : {}
+  photo.aspectRatio
+    ? { aspectRatio: photo.aspectRatio }
+    : photo.width && photo.height
+      ? { aspectRatio: `${photo.width} / ${photo.height}` }
+      : photo.isVideo
+        ? { aspectRatio: '16 / 9' }
+        : {}
 
 const openPreview = (idx: number) => {
   previewIndex.value = idx

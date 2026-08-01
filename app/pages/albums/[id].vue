@@ -4,7 +4,7 @@
       <div class="max-w-7xl mx-auto">
         <div class="flex items-center gap-3 sm:gap-4">
           <button
-            class="p-2.5 rounded-full bg-ink-soft/5 ring-1 ring-ink-soft/10 text-ink-muted hover:text-ink hover:bg-ink-soft/10 transition-all duration-300 ease-soft"
+            class="flex items-center justify-center p-2.5 rounded-full bg-ink-soft/5 ring-1 ring-ink-soft/10 text-ink-muted hover:text-ink hover:bg-ink-soft/10 transition-all duration-300 ease-soft"
             @click="navigateTo('/albums')"
           >
             <Icon name="heroicons:arrow-left" class="size-5" />
@@ -20,12 +20,21 @@
             :class="
               batchMode
                 ? 'bg-accent text-cream shadow-soft'
-                : 'bg-ink-soft/5 text-ink-muted hover:text-ink hover:bg-ink-soft/10 ring-1 ring-ink-soft/10'
+                : !hasPhotos
+                  ? 'opacity-40 cursor-not-allowed'
+                  : 'bg-ink-soft/5 text-ink-muted hover:text-ink hover:bg-ink-soft/10 ring-1 ring-ink-soft/10'
             "
+            :disabled="!hasPhotos"
             @click="toggleBatchMode"
           >
             <Icon name="heroicons:check-circle" class="size-4" />
             {{ batchMode ? `完成 (${selectedIds.length})` : '批量管理' }}
+          </button>
+          <button
+            class="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm text-ink-muted hover:text-ink hover:bg-ink-soft/10 transition-colors duration-300"
+            @click="showEdit = true"
+          >
+            <Icon name="heroicons:pencil" class="size-4" />编辑
           </button>
           <button
             class="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm text-red-500 hover:bg-red-500/10 transition-colors duration-300"
@@ -68,13 +77,21 @@
               >
                 <Icon name="heroicons:check" class="size-4" />
               </button>
-              <img
+              <NuxtImg
                 :src="photo.webpUrl"
                 :alt="photo.fileName"
                 class="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-soft group-hover:scale-105"
                 loading="lazy"
+                sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
                 @error="onImgError"
               />
+              <div v-if="photo.isVideo" class="absolute inset-0 flex items-center justify-center">
+                <span
+                  class="flex items-center justify-center size-10 rounded-full bg-ink/55 backdrop-blur-sm text-cream ring-1 ring-cream/25 shadow-soft transition-transform duration-300 ease-soft group-hover:scale-110"
+                >
+                  <Icon name="heroicons:play" class="size-5 translate-x-0.5" />
+                </span>
+              </div>
               <div
                 v-if="isCover(photo)"
                 class="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full bg-accent text-cream text-xs font-medium flex items-center gap-1"
@@ -90,6 +107,12 @@
           :model-value="previewIndex"
           @update:model-value="previewIndex = $event"
           @close="previewVisible = false"
+        />
+        <AlbumEditDialog
+          :visible="showEdit"
+          :album="album"
+          @update:visible="showEdit = $event"
+          @saved="refresh"
         />
       </div>
     </section>
@@ -188,9 +211,9 @@
         <div
           class="w-full max-w-sm p-1.5 rounded-[1.75rem] bg-ink-soft/10 ring-1 ring-ink-soft/10 shadow-soft-lg"
         >
-          <div class="bg-surface dark:bg-surface rounded-[1.375rem] p-6 text-ink dark:text-cream">
+          <div class="bg-ink/85 backdrop-blur-xl rounded-[1.375rem] p-6 text-cream">
             <h3 class="font-display font-medium mb-4">更换相册</h3>
-            <div v-if="moveAlbumsLoading" class="text-sm text-ink-muted py-4 text-center">
+            <div v-if="moveAlbumsLoading" class="text-sm text-cream/70 py-4 text-center">
               加载中...
             </div>
             <div v-else class="max-h-64 overflow-y-auto space-y-2">
@@ -200,8 +223,8 @@
                 class="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors duration-300 ease-soft"
                 :class="
                   targetAlbumId === a.id
-                    ? 'bg-accent/10 ring-1 ring-accent/40'
-                    : 'hover:bg-ink-soft/10'
+                    ? 'bg-accent/15 ring-1 ring-accent/40'
+                    : 'hover:bg-cream/10'
                 "
               >
                 <input
@@ -211,11 +234,11 @@
                   class="accent-accent size-4 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-surface rounded-full"
                 />
                 <span class="flex-1 text-sm truncate">{{ a.title }}</span>
-                <span class="text-xs text-ink-muted shrink-0">{{ a.photoCount }} 张</span>
+                <span class="text-xs text-cream/60 shrink-0">{{ a.photoCount }} 张</span>
               </label>
             </div>
             <button
-              class="mt-5 w-full py-2.5 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink text-sm font-medium transition-all duration-500 ease-soft hover:scale-[1.02] disabled:opacity-40"
+              class="mt-5 w-full py-2.5 rounded-full bg-cream text-ink text-sm font-medium transition-all duration-500 ease-soft hover:scale-[1.02] disabled:opacity-40"
               :disabled="!targetAlbumId || moving"
               @click="moveSelected"
             >
@@ -302,11 +325,13 @@
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
 const route = useRoute()
-const { data, pending } = useFetch(`/api/albums/${route.params.id}`)
+const { data, pending, refresh } = useFetch(`/api/albums/${route.params.id}`)
 const album = computed(() => data.value as any)
+const hasPhotos = computed(() => (album.value?.photos?.length ?? 0) > 0)
 useHead({ title: computed(() => album.value?.title || '相册') })
 const previewVisible = ref(false)
 const previewIndex = ref(0)
+const showEdit = ref(false)
 const confirmDelete = ref(false)
 const deleting = ref(false)
 const coverUpdating = ref('')
@@ -332,14 +357,23 @@ useBodyLock(showRemoveConfirm)
 useBodyLock(showMoveDialog)
 useBodyLock(showBatchDeleteConfirm)
 useBodyLock(confirmDelete)
+useBodyLock(showEdit)
 
 interface PhotoRatio {
   width?: number | null
   height?: number | null
+  aspectRatio?: string | null
+  isVideo?: number | boolean | null
 }
 
 const imgRatio = (photo: PhotoRatio) =>
-  photo.width && photo.height ? { aspectRatio: `${photo.width} / ${photo.height}` } : {}
+  photo.aspectRatio
+    ? { aspectRatio: photo.aspectRatio }
+    : photo.width && photo.height
+      ? { aspectRatio: `${photo.width} / ${photo.height}` }
+      : photo.isVideo
+        ? { aspectRatio: '16 / 9' }
+        : {}
 
 const isSelected = (id: string) => selectedIds.value.includes(id)
 

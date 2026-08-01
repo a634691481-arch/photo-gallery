@@ -25,14 +25,14 @@
           v-else-if="!albums.length"
           image="/illustrations/the-void.svg"
           alt="暂无相册"
-          text="还没有相册，上传照片时可以为它们创建相册"
+          text="还没有相册，为你的美好瞬间创建一个吧"
         >
-          <NuxtLink
-            to="/upload"
+          <button
             class="inline-flex items-center gap-1.5 mt-4 px-5 py-2.5 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink text-sm font-medium transition-all duration-500 ease-soft hover:scale-105 active:scale-95"
+            @click="showCreate = true"
           >
-            <Icon name="heroicons:cloud-arrow-up" class="size-4" />去上传
-          </NuxtLink>
+            <Icon name="heroicons:plus" class="size-4" />去创建
+          </button>
         </EmptyState>
         <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <div
@@ -42,11 +42,12 @@
             @click="navigateTo(`/albums/${album.id}`)"
           >
             <div class="relative overflow-hidden rounded-[1.125rem] aspect-[4/3]">
-              <img
+              <NuxtImg
                 :src="album.coverUrl"
                 :alt="album.title"
                 class="w-full h-full object-cover transition-all duration-700 ease-soft group-hover:scale-105"
                 loading="lazy"
+                sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                 @error="onImgError"
               />
               <div
@@ -63,13 +64,17 @@
         </div>
       </div>
     </section>
+
+    <AlbumCreateDialog v-model:visible="showCreate" @created="refresh" />
   </div>
 </template>
 
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
 useHead({ title: '相册' })
-const { data, pending } = useFetch('/api/albums')
+const { data, pending, refresh } = useFetch('/api/albums')
 const albums = computed(() => data.value ?? [])
 const { onImgError } = useImgFallback()
+
+const showCreate = ref(false)
 </script>

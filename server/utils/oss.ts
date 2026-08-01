@@ -26,8 +26,14 @@ export async function uploadToOSS(key: string, buffer: Buffer, mimeType: string)
   return result.url
 }
 
-export function getSignedUrl(key: string, expires = 3600 * 24 * 365) {
+export function getSignedUrl(key: string) {
   const oss = getOSSClient()
+  // Bucket the expiry to the start of the current UTC day so the same key
+  // yields the same signed URL within a day: stable URLs let browser and ipx
+  // caches hit. expires is relative seconds; the absolute Expires embedded in
+  // the signature is dayStart + 365d, which is constant inside a day.
+  const dayStartMs = Math.floor(Date.now() / 86_400_000) * 86_400_000
+  const expires = Math.round((dayStartMs + 365 * 86_400_000 - Date.now()) / 1000)
   return oss.signatureUrl(key, { expires })
 }
 

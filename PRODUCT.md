@@ -30,6 +30,7 @@ web
 ## Capabilities and Constraints
 
 **已确认功能：**
+
 - 时间线瀑布流首页（按月份分组，无限滚动）
 - 相册管理（多对多，一张照片可属多个相册）
 - AI 人脸识别分组（浏览器端 face-api.js，上传后自动检测，手动命名）
@@ -46,12 +47,14 @@ web
 - 管理后台（用户审批、相册管理、系统设置）
 
 **技术栈：**
+
 - Nuxt 4 + Tailwind CSS v3 + GSAP
 - PostgreSQL (Supabase) + Prisma
 - 阿里云 OSS 存储
 - Vercel 部署
 
 **未决事项：**
+
 - Logo 和最终品牌名称尚未确定
 - 域名尚未最终确定
 

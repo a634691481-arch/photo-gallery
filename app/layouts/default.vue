@@ -17,4 +17,14 @@
   </main>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const { $pwa } = useNuxtApp()
+const toast = useToast()
+
+watch(
+  () => $pwa?.offlineReady,
+  (v) => {
+    if (v) toast.success('已可离线使用')
+  },
+)
+</script>

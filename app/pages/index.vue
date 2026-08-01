@@ -53,8 +53,11 @@
                 :class="
                   batchMode
                     ? 'bg-accent text-cream shadow-soft'
-                    : 'text-ink-muted hover:text-ink hover:bg-ink-soft/10'
+                    : hasPhotos
+                      ? 'text-ink-muted hover:text-ink hover:bg-ink-soft/10'
+                      : 'opacity-40 cursor-not-allowed'
                 "
+                :disabled="!hasPhotos"
                 @click="toggleBatchMode"
               >
                 {{ batchMode ? `完成 (${selectedIds.length})` : '批量管理' }}
@@ -104,41 +107,44 @@
                 >
                   <Icon name="heroicons:check" class="size-4" />
                 </button>
-                <img
+                <NuxtImg
                   :src="photo.webpUrl"
                   :alt="photo.fileName"
                   loading="lazy"
                   class="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-soft group-hover:scale-105 group-active:scale-105"
+                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
                   @error="onImgError"
                 />
+                <div v-if="photo.isVideo" class="absolute inset-0 flex items-center justify-center">
+                  <span
+                    class="flex items-center justify-center size-10 rounded-full bg-ink/55 backdrop-blur-sm text-cream ring-1 ring-cream/25 shadow-soft transition-transform duration-300 ease-soft group-hover:scale-110"
+                  >
+                    <Icon name="heroicons:play" class="size-5 translate-x-0.5" />
+                  </span>
+                </div>
                 <div
                   class="absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-transparent opacity-0 md:group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-500 ease-soft"
                 >
                   <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
                     <div class="flex items-center gap-2">
-                      <span
-                        v-if="photo.isVideo"
-                        class="text-cream/80 text-xs flex items-center gap-1"
-                        ><Icon name="heroicons:play-circle" class="size-3"
-                      /></span>
                       <span class="text-cream/60 text-xs">{{ formatDate(photo.takenAt) }}</span>
                     </div>
                   </div>
                 </div>
                 <button
                   class="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-sm font-medium transition-all duration-500 ease-soft hover:scale-110 active:scale-95"
-                  :class="
+                  :class="[
                     photo.liked
-                      ? 'bg-accent text-cream shadow-soft'
-                      : 'bg-ink/70 text-cream/70 backdrop-blur-sm hover:bg-ink/90 hover:text-cream'
-                  "
+                      ? 'bg-accent text-cream shadow-soft opacity-100'
+                      : 'bg-ink/70 text-cream/70 backdrop-blur-sm hover:bg-ink/90 hover:text-cream opacity-0 md:group-hover:opacity-100 group-active:opacity-100',
+                  ]"
                   @click.stop="toggleLike(photo)"
                 >
                   <Icon
-                    :name="photo.liked ? 'heroicons:solid-heart' : 'heroicons:heart'"
+                    :name="photo.liked ? 'heroicons:heart-solid' : 'heroicons:heart'"
                     class="size-4"
                   />
-                  <span v-if="photo.likeCount > 0">{{ photo.likeCount }}</span>
+                  <span v-if="photo.likeCount > 1">{{ photo.likeCount }}</span>
                 </button>
               </div>
             </div>
@@ -199,9 +205,9 @@
         <div
           class="w-full max-w-sm p-1.5 rounded-[1.75rem] bg-ink-soft/10 ring-1 ring-ink-soft/10 shadow-soft-lg"
         >
-          <div class="bg-surface dark:bg-surface rounded-[1.375rem] p-6 text-ink dark:text-cream">
+          <div class="bg-ink/85 backdrop-blur-xl rounded-[1.375rem] p-6 text-cream">
             <h3 class="font-display font-medium mb-4">移入相册</h3>
-            <div v-if="moveAlbumsLoading" class="text-sm text-ink-muted py-4 text-center">
+            <div v-if="moveAlbumsLoading" class="text-sm text-cream/70 py-4 text-center">
               加载中...
             </div>
             <div v-else class="max-h-64 overflow-y-auto space-y-2">
@@ -211,8 +217,8 @@
                 class="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors duration-300 ease-soft"
                 :class="
                   targetAlbumId === a.id
-                    ? 'bg-accent/10 ring-1 ring-accent/40'
-                    : 'hover:bg-ink-soft/10'
+                    ? 'bg-accent/15 ring-1 ring-accent/40'
+                    : 'hover:bg-cream/10'
                 "
               >
                 <input
@@ -222,18 +228,17 @@
                   class="accent-accent size-4 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-surface rounded-full"
                 />
                 <span class="flex-1 text-sm truncate">{{ a.title }}</span>
-                <span class="text-xs text-ink-muted shrink-0">{{ a.photoCount }} 张</span>
+                <span class="text-xs text-cream/60 shrink-0">{{ a.photoCount }} 张</span>
               </label>
-              <NuxtLink
-                to="/albums/create"
-                class="flex items-center justify-center gap-1.5 p-3 rounded-xl text-sm text-ink-muted hover:text-ink hover:bg-ink-soft/10 transition-colors duration-300"
-                @click="showMoveDialog = false"
+              <button
+                class="flex items-center justify-center gap-1.5 p-3 rounded-xl text-sm text-cream/70 hover:text-cream hover:bg-cream/10 transition-colors duration-300 w-full"
+                @click="showCreateDialog = true"
               >
                 <Icon name="heroicons:plus" class="size-4" />新建相册
-              </NuxtLink>
+              </button>
             </div>
             <button
-              class="mt-5 w-full py-2.5 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink text-sm font-medium transition-all duration-500 ease-soft hover:scale-[1.02] disabled:opacity-40"
+              class="mt-5 w-full py-2.5 rounded-full bg-cream text-ink text-sm font-medium transition-all duration-500 ease-soft hover:scale-[1.02] disabled:opacity-40"
               :disabled="!targetAlbumId || moving"
               @click="moveSelected"
             >
@@ -279,6 +284,8 @@
       </div>
     </Teleport>
 
+    <AlbumCreateDialog v-model:visible="showCreateDialog" @created="onAlbumCreated" />
+
     <PhotoPreview
       :photos="allPhotos"
       :visible="previewVisible"
@@ -307,7 +314,9 @@ const hasMore = ref(true)
 const loadTrigger = ref<HTMLElement>()
 const batchMode = ref(false)
 const selectedIds = ref<string[]>([])
+const hasPhotos = computed(() => allPhotos.value.length > 0)
 const showMoveDialog = ref(false)
+const showCreateDialog = ref(false)
 const showDeleteConfirm = ref(false)
 const targetAlbumId = ref('')
 const moveAlbums = ref<any[]>([])
@@ -319,14 +328,23 @@ const { onImgError } = useImgFallback()
 
 useBodyLock(showMoveDialog)
 useBodyLock(showDeleteConfirm)
+useBodyLock(showCreateDialog)
 
 interface PhotoRatio {
   width?: number | null
   height?: number | null
+  aspectRatio?: string | null
+  isVideo?: number | boolean | null
 }
 
 const imgRatio = (photo: PhotoRatio) =>
-  photo.width && photo.height ? { aspectRatio: `${photo.width} / ${photo.height}` } : {}
+  photo.aspectRatio
+    ? { aspectRatio: photo.aspectRatio }
+    : photo.width && photo.height
+      ? { aspectRatio: `${photo.width} / ${photo.height}` }
+      : photo.isVideo
+        ? { aspectRatio: '16 / 9' }
+        : {}
 
 const selectMonth = (m: string) => {
   selectedMonth.value = m
@@ -382,6 +400,16 @@ const openMoveDialog = async () => {
   }
 }
 
+const onAlbumCreated = async (id: string) => {
+  targetAlbumId.value = id
+  try {
+    const data = await $fetch('/api/albums')
+    moveAlbums.value = data ?? []
+  } catch {
+    /* 列表刷新失败可忽略 */
+  }
+}
+
 const moveSelected = async () => {
   if (!targetAlbumId.value || moving.value) return
   moving.value = true
@@ -418,12 +446,12 @@ const deleteSelected = async () => {
   }
 }
 
-const months = [
+const { data: years } = await useFetch('/api/photos/years')
+
+const months = computed(() => [
   { label: '全部', value: 'all' },
-  { label: '2026年', value: '2026' },
-  { label: '2025年', value: '2025' },
-  { label: '2024年', value: '2024' },
-]
+  ...(years.value ?? []).map((y: number) => ({ label: `${y}年`, value: String(y) })),
+])
 
 const photoGroups = computed(() => {
   const filtered =

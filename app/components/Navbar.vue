@@ -9,23 +9,50 @@
           class="flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full transition-colors duration-300 hover:bg-ink-soft/10"
         >
           <span
-            class="size-2 rounded-full bg-accent shadow-soft transition-transform duration-500 ease-soft group-hover:scale-125"
-          />
+            class="relative grid place-items-center size-7 rounded-full bg-accent/12 ring-1 ring-accent/25 transition-colors duration-500 ease-soft group-hover:bg-accent/20"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              class="absolute size-4 text-accent/45 transition-transform duration-700 ease-soft -rotate-6 group-hover:rotate-0"
+              aria-hidden="true"
+            >
+              <rect
+                x="5"
+                y="3"
+                width="14"
+                height="15"
+                rx="3"
+                stroke="currentColor"
+                stroke-width="1.6"
+              />
+            </svg>
+            <svg
+              viewBox="0 0 24 24"
+              class="relative size-4 text-accent transition-transform duration-700 ease-soft group-hover:-translate-y-px"
+              aria-hidden="true"
+            >
+              <rect x="4" y="6" width="14" height="14" rx="3.5" fill="currentColor" />
+              <circle cx="11" cy="13" r="2.2" fill="rgb(var(--color-surface))" />
+            </svg>
+          </span>
           <span class="font-display text-sm sm:text-base font-semibold tracking-tight text-ink">
             家庭相册
           </span>
         </NuxtLink>
 
-        <div class="hidden md:flex items-center gap-1">
-          <NuxtLink
-            v-for="link in links"
-            :key="link.to"
-            :to="link.to"
-            class="px-4 py-2 text-sm rounded-full transition-all duration-300 ease-soft text-ink-muted hover:text-ink hover:bg-ink-soft/10 whitespace-nowrap"
-            active-class="!text-ink !bg-ink-soft/20"
-          >
-            {{ link.label }}
-          </NuxtLink>
+        <div class="flex items-center gap-1">
+          <div class="hidden md:flex items-center gap-1">
+            <NuxtLink
+              v-for="link in links"
+              :key="link.to"
+              :to="link.to"
+              class="px-4 py-2 text-sm rounded-full transition-all duration-300 ease-soft text-ink-muted hover:text-ink hover:bg-ink-soft/10 whitespace-nowrap"
+              active-class="!text-ink !bg-ink-soft/20"
+            >
+              {{ link.label }}
+            </NuxtLink>
+          </div>
         </div>
 
         <div class="flex items-center gap-1.5">
@@ -76,7 +103,7 @@
     >
       <div
         v-if="open"
-        class="fixed inset-0 -z-10 md:hidden bg-surface/85 backdrop-blur-3xl flex flex-col items-center justify-center gap-2 overscroll-contain"
+        class="fixed inset-0 z-10 md:hidden pointer-events-auto bg-surface/85 backdrop-blur-3xl flex flex-col items-center justify-center gap-2 overscroll-contain"
         role="dialog"
         aria-modal="true"
         aria-label="导航菜单"

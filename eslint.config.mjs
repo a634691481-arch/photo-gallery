@@ -19,6 +19,13 @@ export default [
     },
   },
   {
-    ignores: ['**/.nuxt/**', '**/.output/**', '**/dist/**', '**/node_modules/**', '**/scripts/**'],
+    ignores: [
+      '**/.nuxt/**',
+      '**/.output/**',
+      '**/dist/**',
+      '**/node_modules/**',
+      '**/scripts/**',
+      '**/app/assets/vendor/**',
+    ],
   },
 ]
